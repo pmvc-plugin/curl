@@ -2,7 +2,7 @@
 
 interface curl
 {
-    public function set_options($url, $cus_options=array());
+    public function set_options($url, $options=array());
     public function run($more=array());
     public function set_as_post($url, $post_field=array(), $options=array());
 } 
@@ -31,16 +31,16 @@ class Curl_Helper implements curl
     /**
     * set curl option
     * @param string $url
-    * @param array $cus_options curl option
+    * @param array $options curl option
     * @see http://php.net/manual/en/function.curl-setopt.php
     * @return curl_setopt_array result
     */
-    public function set_options($url, $cus_options=array()){
+    public function set_options($url, $options=array()){
         //init options
         $opts = $this->opts;
         //assing custom options
-        if(is_array($cus_options)){
-            foreach($cus_options as $k=>$v)
+        if(is_array($options)){
+            foreach($options as $k=>$v)
             {
                 if (CURLOPT_TIMEOUT_MS == $k || CURLOPT_CONNECTTIMEOUT_MS == $k)//work around for curl options CURLOPT_TIMEOUT_MS and CURLOPT_CONNECTTIMEOUT_MS doesn't work.
                 {
@@ -57,7 +57,15 @@ class Curl_Helper implements curl
         if(is_null($this->oCurl)){
             $this->oCurl = curl_init();
         }
-        return curl_setopt_array($this->oCurl,$opts);
+        return $this->set($opts);
+    }
+
+    /**
+     * @param array $options curl option
+     */
+    function set ($options)
+    {
+        return curl_setopt_array($this->oCurl,$options);
     }
 
     /**
@@ -77,13 +85,13 @@ class Curl_Helper implements curl
      * set as post
     * @param string $url
     * @param array $post_field
-    * @param array $cus_options curl option
+    * @param array $options curl option
     * @return curl_setopt_array result
      */
-    public function set_as_post($url,$post_field=array(),$cus_options=array()){
-        $cus_options[CURLOPT_POST] = true;
-        $cus_options[CURLOPT_POSTFIELDS] = $post_field;
-        return $this->set_options($url, $cus_options);
+    public function set_as_post($url,$post_field=array(),$options=array()){
+        $options[CURLOPT_POST] = true;
+        $options[CURLOPT_POSTFIELDS] = $post_field;
+        return $this->set_options($url, $options);
     }
 
 
