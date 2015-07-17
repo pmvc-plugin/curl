@@ -233,7 +233,12 @@ class Curl_Responder
      */
     public function __construct($return, $oCurl, $more=array())
     {
+        $this->errno = curl_errno($oCurl);
+        $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
+        if (empty($header_size)) {
+            return;
+        }
         $this->header_raw = substr($return, 0, $header_size);
         $this->header = $this->getHeaders($this->header_raw);
         if (!empty($this->header['content-encoding']) &&
@@ -243,8 +248,6 @@ class Curl_Responder
         } else {
             $this->body = substr($return, $header_size);
         }
-        $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
-        $this->errno = curl_errno($oCurl);
         if (!empty($more)) {
             foreach ($more as $key) {
                 $this->more[$key] = curl_getinfo($oCurl, $key);

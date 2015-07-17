@@ -12,8 +12,6 @@ class curl extends \PMVC\PlugIn
         $this->setDefaultAlias(new \Multi_Curl_Helper());
     }
 
-
-
     public function get($url=null, $function=null)
     {
         if (!is_callable($function)) {
