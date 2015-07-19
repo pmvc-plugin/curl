@@ -14,11 +14,43 @@ class curl extends \PMVC\PlugIn
 
     public function get($url=null, $function=null)
     {
-        if (!is_callable($function)) {
-            return parent::get($path, $function);
-        }
         $oCurl = new \Curl_Helper();
         $oCurl->set_options($url);
+        $this->add($oCurl, null, $function);
+        return $oCurl;
+    }
+
+    public function put($url=null, $function=null, $params=array())
+    {
+        $oCurl = new \Curl_Helper();
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'PUT',
+            CURLOPT_POSTFIELDS=>http_build_query($params, '', '&')
+        );
+        $oCurl->set_options($url,$curl_opt);
+        $this->add($oCurl, null, $function);
+        return $oCurl;
+    } 
+
+    public function post($url=null, $function=null, $params=array())
+    {
+        $oCurl = new \Curl_Helper();
+        $curl_opt = array(
+            CURLOPT_POST=>true,
+            CURLOPT_POSTFIELDS=>$params
+        );
+        $oCurl->set_options($url,$curl_opt);
+        $this->add($oCurl, null, $function);
+        return $oCurl;
+    } 
+
+    public function delete($url=null, $function=null)
+    {
+        $oCurl = new \Curl_Helper();
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'DELETE'
+        );
+        $oCurl->set_options($url,$curl_opt);
         $this->add($oCurl, null, $function);
         return $oCurl;
     }

@@ -4,7 +4,6 @@ interface curl
 {
     public function set_options($url, $options=array());
     public function run($more=array());
-    public function set_as_post($url, $post_field=array(), $options=array());
 }
 
 /**
@@ -32,6 +31,7 @@ class Curl_Helper implements curl
     * @param string $url
     * @param array $options curl option
     * @see http://php.net/manual/en/function.curl-setopt.php
+    * @see https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
     * @return curl_setopt_array result
     */
     public function set_options($url, $options=array())
@@ -41,16 +41,6 @@ class Curl_Helper implements curl
         //assing custom options
         if (is_array($options)) {
             foreach ($options as $k=>$v) {
-                if (CURLOPT_TIMEOUT_MS == $k || CURLOPT_CONNECTTIMEOUT_MS == $k) {
-                    //work around for curl options CURLOPT_TIMEOUT_MS and CURLOPT_CONNECTTIMEOUT_MS doesn't work.
-
-                    $v = ($v < 1000) ? 1 : $v /1000;
-                    if (CURLOPT_TIMEOUT_MS == $k) {
-                        $k = CURLOPT_TIMEOUT;
-                    } else {
-                        $k = CURLOPT_CONNECTTIMEOUT;
-                    }
-                }
                 $opts[$k] = $v;
             }
         }
@@ -82,21 +72,6 @@ class Curl_Helper implements curl
         $this->clean();
         return $r;
     }
-
-    /**
-     * set as post
-    * @param string $url
-    * @param array $post_field
-    * @param array $options curl option
-    * @return curl_setopt_array result
-     */
-    public function set_as_post($url, $post_field=array(), $options=array())
-    {
-        $options[CURLOPT_POST] = true;
-        $options[CURLOPT_POSTFIELDS] = $post_field;
-        return $this->set_options($url, $options);
-    }
-
 
     /**
      * @return curl resource
