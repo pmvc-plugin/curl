@@ -163,6 +163,7 @@ class Multi_Curl_Helper
             curl_multi_remove_handle($mh, $oCurl);
         }
         curl_multi_close($mh);
+        $this->curl_map = array();
         return $result;
     }
 }

@@ -12,6 +12,14 @@ class curl extends \PMVC\PlugIn
         $this->setDefaultAlias(new \Multi_Curl_Helper());
     }
 
+    /**
+     * Take a run at destruct whether have not execute task or not
+     */
+    function __destruct()
+    {
+        $this->run();
+    }
+
     public function get($url=null, $function=null)
     {
         $oCurl = new \Curl_Helper();
