@@ -238,6 +238,7 @@ class Curl_Responder
      {
          $headers = str_replace("\r", "", $str);
          $headers = explode("\n", $headers);
+         $headerdata = array();
          foreach ($headers as $value) {
              $header = explode(": ", $value);
              if (!empty($header[0]) && empty($header[1])) {
