@@ -13,53 +13,59 @@ class curl extends \PMVC\PlugIn
     }
 
     /**
-     * Take a run at destruct whether have not execute task or not
+     * Take a run at destruct for some not run task 
+     * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->run();
     }
 
-    public function get($url=null, $function=null)
+    private function _add($url, $function, $opts)
     {
         $oCurl = new \Curl_Helper();
-        $oCurl->set_options($url);
+        $oCurl->set_options($url, $opts);
         $this->add($oCurl, null, $function);
         return $oCurl;
     }
 
+
+    public function get($url=null, $function=null)
+    {
+        return $this->_add($url, $function, array());
+    }
+
     public function put($url=null, $function=null, $params=array())
     {
-        $oCurl = new \Curl_Helper();
         $curl_opt = array(
             CURLOPT_CUSTOMREQUEST=>'PUT',
             CURLOPT_POSTFIELDS=>http_build_query($params, '', '&')
         );
-        $oCurl->set_options($url,$curl_opt);
-        $this->add($oCurl, null, $function);
-        return $oCurl;
+        return $this->_add($url, $function, $curl_opt);
     } 
 
     public function post($url=null, $function=null, $params=array())
     {
-        $oCurl = new \Curl_Helper();
         $curl_opt = array(
             CURLOPT_POST=>true,
             CURLOPT_POSTFIELDS=>$params
         );
-        $oCurl->set_options($url,$curl_opt);
-        $this->add($oCurl, null, $function);
-        return $oCurl;
+        return $this->_add($url, $function, $curl_opt);
     } 
 
     public function delete($url=null, $function=null)
     {
-        $oCurl = new \Curl_Helper();
         $curl_opt = array(
             CURLOPT_CUSTOMREQUEST=>'DELETE'
         );
-        $oCurl->set_options($url,$curl_opt);
-        $this->add($oCurl, null, $function);
-        return $oCurl;
+        return $this->_add($url, $function, $curl_opt);
+    }
+
+    public function options($url=null, $function=null)
+    {
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'OPTIONS'
+        );
+        return $this->_add($url, $function, $curl_opt);
     }
 }
