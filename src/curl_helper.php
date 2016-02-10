@@ -28,10 +28,11 @@ class CurlHelper implements curl
 
     /**
     * set curl option
-    * @param string $url
-    * @param array $options curl option
-    * @see http://php.net/manual/en/function.curl-setopt.php
-    * @see https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
+     *
+    * @param  string $url
+    * @param  array  $options curl option
+    * @see    http://php.net/manual/en/function.curl-setopt.php
+    * @see    https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
     * @return curl_setopt_array result
     */
     public function setOptions($url, $options=array())
@@ -76,20 +77,21 @@ class CurlHelper implements curl
     /**
      * reset follow location
      */
-     public function resetFollowLocation()
-     {
-        if ( !empty($this->opts[CURLOPT_CUSTOMREQUEST]) &&
-            'GET' !== $this->opts[CURLOPT_CUSTOMREQUEST] &&
-             !empty($this->opts[CURLOPT_FOLLOWLOCATION])
-           ) {
+    public function resetFollowLocation()
+    {
+        if (!empty($this->opts[CURLOPT_CUSTOMREQUEST]) 
+            && 'GET' !== $this->opts[CURLOPT_CUSTOMREQUEST] 
+            && !empty($this->opts[CURLOPT_FOLLOWLOCATION])
+        ) {
             $this->set(array(CURLOPT_FOLLOWLOCATION=>false));
             $this->followLocation = true;
         }
-     }
+    }
 
     /**
      * return curl execute result
-     * @see http://php.net/manual/en/function.curl-getinfo.php
+     *
+     * @see    http://php.net/manual/en/function.curl-getinfo.php
      * @return CurlResponder
      */
     public function process($more=array())
@@ -140,6 +142,7 @@ class MultiCurlHelper
 
     /**
      * add CurlHelper to Multi_Curl_Helper
+     *
      * @param $ocurl
      * @param $key a hashmap for CurlHelper, need assign key, the return result will reference
      */
@@ -154,6 +157,7 @@ class MultiCurlHelper
 
     /**
      * execute multi curl
+     *
      * @return hasmap by CurlResponder
      */
     public function process($more=array())
@@ -237,16 +241,16 @@ class CurlResponder
         }
         $this->rawHeader = substr($return, 0, $header_size);
         $this->header = $this->getHeaders($this->rawHeader);
-        if ($curlHelper->followLocation && 
-            $this->header['location']
+        if ($curlHelper->followLocation  
+            && $this->header['location']
         ) {
              $location = new  CurlHelper();
              $location->set_options($this->header['location']);
              $respondLocation = $location->run(); 
              $this->body = $respondLocation->body;
-        } elseif (!empty($this->header['content-encoding']) &&
-             'gzip' === $this->header['content-encoding']
-           ) {
+        } elseif (!empty($this->header['content-encoding']) 
+            && 'gzip' === $this->header['content-encoding']
+        ) {
             $this->body = gzinflate(substr($return, $header_size+10, -8));
         } else {
             $this->body = substr($return, $header_size);
@@ -261,19 +265,19 @@ class CurlResponder
     /**
      * parse header String
      */
-     public function getHeaders($str)
-     {
-         $headers = str_replace("\r", "", $str);
-         $headers = explode("\n", $headers);
-         $headerdata = array();
-         foreach ($headers as $value) {
-             $header = explode(": ", $value);
-             if (!empty($header[0]) && empty($header[1])) {
-                 $headerdata['status'] = $header[0];
-             } elseif (!empty($header[0]) && !empty($header[1])) {
-                 $headerdata[strtolower($header[0])] = $header[1];
-             }
-         }
-         return $headerdata;
-     }
+    public function getHeaders($str)
+    {
+        $headers = str_replace("\r", "", $str);
+        $headers = explode("\n", $headers);
+        $headerdata = array();
+        foreach ($headers as $value) {
+            $header = explode(": ", $value);
+            if (!empty($header[0]) && empty($header[1])) {
+                $headerdata['status'] = $header[0];
+            } elseif (!empty($header[0]) && !empty($header[1])) {
+                $headerdata[strtolower($header[0])] = $header[1];
+            }
+        }
+        return $headerdata;
+    }
 }
