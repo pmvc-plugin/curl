@@ -1,7 +1,5 @@
 <?php
 namespace PMVC\PlugIn\curl;
-use MultiCurlHelper;
-use CurlHelper;
 
 \PMVC\l(__DIR__.'/src/curl_helper.php');
 

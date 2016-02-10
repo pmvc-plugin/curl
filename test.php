@@ -1,6 +1,7 @@
 <?php
 PMVC\Load::plug();
 PMVC\setPlugInFolder('../');
+use PMVC\PlugIn\curl\CurlHelper;
 class CurlTest extends PHPUnit_Framework_TestCase
 {
     function testGet()

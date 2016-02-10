@@ -1,6 +1,7 @@
 <?php
+namespace PMVC\PlugIn\curl;
 
-interface curl
+interface CurlInterface 
 {
     public function setOptions($url, $options=array());
     public function process($more=array());
@@ -9,7 +10,7 @@ interface curl
 /**
 * a curl wraper for ci
 */
-class CurlHelper implements curl
+class CurlHelper implements CurlInterface
 {
     /**
      * @var custom follow location
