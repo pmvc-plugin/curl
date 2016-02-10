@@ -19,12 +19,12 @@ class CurlHelper implements curl
     /**
      * @var default curl options
      */
-    private $opts = array();
+    private $_opts = array();
 
     /**
      * @var curl resource
      */
-    private $oCurl = null;
+    private $_oCurl = null;
 
     /**
     * set curl option
@@ -37,11 +37,8 @@ class CurlHelper implements curl
     */
     public function setOptions($url, $options=array())
     {
-        $this->opts = $this->getDefaultOptions();
+        $this->_opts = $this->getDefaultOptions();
         $options[CURLOPT_URL]=$url;
-        if (is_null($this->oCurl)) {
-            $this->oCurl = curl_init();
-        }
         return $this->set($options);
     }
 
@@ -53,10 +50,10 @@ class CurlHelper implements curl
         //assing custom options
         if (is_array($options)) {
             foreach ($options as $k=>$v) {
-                $this->opts[$k] = $v;
+                $this->_opts[$k] = $v;
             }
         }
-        return curl_setopt_array($this->oCurl, $this->opts);
+        return $this->_opts;
     }
 
     /**
@@ -97,7 +94,7 @@ class CurlHelper implements curl
     public function process($more=array())
     {
         $this->resetFollowLocation();
-        $oCurl = $this->oCurl;
+        $oCurl = $this->getInstance();
         $return = curl_exec($oCurl);
         $r = new CurlResponder($return, $this, $more);
         $this->clean();
@@ -109,7 +106,11 @@ class CurlHelper implements curl
      */
     public function getInstance()
     {
-        return $this->oCurl;
+        if (is_null($this->_oCurl)) {
+            $this->_oCurl = curl_init();
+            curl_setopt_array($this->_oCurl, $this->_opts);
+        }
+        return $this->_oCurl;
     }
 
     /**
@@ -117,10 +118,10 @@ class CurlHelper implements curl
      */
     public function clean()
     {
-        if (is_resource($this->oCurl)) {
-            curl_close($this->oCurl);
+        if (is_resource($this->_oCurl)) {
+            curl_close($this->_oCurl);
         }
-        $this->oCurl = null;
+        $this->_oCurl = null;
     }
 
     public function __destruct()
