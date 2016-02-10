@@ -9,6 +9,6 @@ class CurlTest extends PHPUnit_Framework_TestCase
         PMVC\plug('curl')->get('http://tw.yahoo.com',function($r) use ($phpunit){
             $phpunit->assertTrue(empty($r->errno));
         });
-        PMVC\plug('curl')->run();
+        PMVC\plug('curl')->process();
     }
 }

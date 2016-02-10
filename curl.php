@@ -1,5 +1,7 @@
 <?php
 namespace PMVC\PlugIn\curl;
+use MultiCurlHelper;
+use CurlHelper;
 
 \PMVC\l(__DIR__.'/src/curl_helper.php');
 
@@ -9,7 +11,7 @@ class curl extends \PMVC\PlugIn
 {
     public function init()
     {
-        $this->setDefaultAlias(new \Multi_Curl_Helper());
+        $this->setDefaultAlias(new MultiCurlHelper());
     }
 
     /**
@@ -18,14 +20,14 @@ class curl extends \PMVC\PlugIn
      */
     public function __destruct()
     {
-        $this->run();
+        $this->process();
     }
 
     private function _add($url, $function, $opts)
     {
-        $oCurl = new \Curl_Helper();
-        $oCurl->set_options($url, $opts);
-        $this->add($oCurl, null, $function);
+        $oCurl = new CurlHelper();
+        $oCurl->setOptions($url, $opts);
+        $this->add($oCurl, $function);
         return $oCurl;
     }
 

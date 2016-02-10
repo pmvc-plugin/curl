@@ -2,14 +2,14 @@
 
 interface curl
 {
-    public function set_options($url, $options=array());
-    public function run($more=array());
+    public function setOptions($url, $options=array());
+    public function process($more=array());
 }
 
 /**
 * a curl wraper for ci
 */
-class Curl_Helper implements curl
+class CurlHelper implements curl
 {
     /**
      * @var custom follow location
@@ -34,9 +34,9 @@ class Curl_Helper implements curl
     * @see https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
     * @return curl_setopt_array result
     */
-    public function set_options($url, $options=array())
+    public function setOptions($url, $options=array())
     {
-        $this->opts = $this->get_default_options();
+        $this->opts = $this->getDefaultOptions();
         $options[CURLOPT_URL]=$url;
         if (is_null($this->oCurl)) {
             $this->oCurl = curl_init();
@@ -61,7 +61,7 @@ class Curl_Helper implements curl
     /**
      * get default options
      */
-    public function get_default_options()
+    public function getDefaultOptions()
     {
         return array(
              CURLOPT_HEADER         => true
@@ -76,7 +76,7 @@ class Curl_Helper implements curl
     /**
      * reset follow location
      */
-     public function reset_follow_location()
+     public function resetFollowLocation()
      {
         if ( !empty($this->opts[CURLOPT_CUSTOMREQUEST]) &&
             'GET' !== $this->opts[CURLOPT_CUSTOMREQUEST] &&
@@ -92,12 +92,12 @@ class Curl_Helper implements curl
      * @see http://php.net/manual/en/function.curl-getinfo.php
      * @return CurlResponder
      */
-    public function run($more=array())
+    public function process($more=array())
     {
-        $this->reset_follow_location();
+        $this->resetFollowLocation();
         $oCurl = $this->oCurl;
         $return = curl_exec($oCurl);
-        $r = new Curl_Responder($return, $this, $more);
+        $r = new CurlResponder($return, $this, $more);
         $this->clean();
         return $r;
     }
@@ -105,7 +105,7 @@ class Curl_Helper implements curl
     /**
      * @return curl resource
      */
-    public function get_instance()
+    public function getInstance()
     {
         return $this->oCurl;
     }
@@ -131,54 +131,40 @@ class Curl_Helper implements curl
 /**
  * implement for multi curl
  */
-class Multi_Curl_Helper
+class MultiCurlHelper
 {
     /**
-     * @var Curl_Helper array
+     * @var array CurlHelper
      */
-    private $curl_map;
+    private $_curlMap = array();
 
     /**
-     * @param array $curl_map a hashmap for Curl_Helper, need assign key, the return result will reference
-     */
-    public function __construct($curl_map=null)
-    {
-        if ($curl_map) {
-            $this->add($curl_map);
-        }
-    }
-
-    /**
-     * add Curl_Helper to Multi_Curl_Helper
+     * add CurlHelper to Multi_Curl_Helper
      * @param $ocurl
-     * @param $key a hashmap for Curl_Helper, need assign key, the return result will reference
+     * @param $key a hashmap for CurlHelper, need assign key, the return result will reference
      */
-    public function add($ocurl, $key='', $function=null)
+    public function add($ocurl, $function=null)
     {
         $data = (object)array(
             'obj'=>$ocurl,
             'func'=>$function
         );
-        if (!strlen($key)) {
-            $this->curl_map[]=$data;
-        } else {
-            $this->curl_map[$key]=$data;
-        }
+        $this->_curlMap[]=$data;
     }
 
     /**
      * execute multi curl
      * @return hasmap by CurlResponder
      */
-    public function run($more=array())
+    public function process($more=array())
     {
         $mh = curl_multi_init();
-        if (empty($this->curl_map) || !is_array($this->curl_map)) {
+        if (empty($this->_curlMap) || !is_array($this->_curlMap)) {
             return false;
         }
-        foreach ($this->curl_map as $hash=>$data) {
-            $data->obj->reset_follow_location();
-            $oCurl = $data->obj->get_instance();
+        foreach ($this->_curlMap as $hash=>$data) {
+            $data->obj->resetFollowLocation();
+            $oCurl = $data->obj->getInstance();
             curl_multi_add_handle($mh, $oCurl);
         }
         // set run flag
@@ -186,20 +172,18 @@ class Multi_Curl_Helper
         do {
             curl_multi_exec($mh, $running);
         } while ($running > 0);
-        $result = array();
-        foreach ($this->curl_map as $hash=>$data) {
-            $oCurl = $data->obj->get_instance();
+        foreach ($this->_curlMap as $hash=>$data) {
+            $oCurl = $data->obj->getInstance();
             $return = curl_multi_getcontent($oCurl);
-            $r = new Curl_Responder($return, $data->obj, $more);
+            $r = new CurlResponder($return, $data->obj, $more);
             if (is_callable($data->func)) {
                 call_user_func($data->func, $r);
             }
-            $result[$hash]=$r;
             curl_multi_remove_handle($mh, $oCurl);
         }
         curl_multi_close($mh);
-        $this->curl_map = array();
-        return $result;
+        $this->_curlMap = array();
+        return true;
     }
 }
 
@@ -207,7 +191,7 @@ class Multi_Curl_Helper
 /**
  * keep curl respone data
  */
-class Curl_Responder
+class CurlResponder
 {
     /**
      * @var http respone code
@@ -220,9 +204,9 @@ class Curl_Responder
     public $header;
 
     /**
-     * @var http respone header_raw
+     * @var http respone rawHeader 
      */
-    public $header_raw;
+    public $rawHeader;
 
     /**
      * @var http respone header
@@ -244,19 +228,19 @@ class Curl_Responder
      */
     public function __construct($return, $curlHelper, $more=array())
     {
-        $oCurl = $curlHelper->get_instance();
+        $oCurl = $curlHelper->getInstance();
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
         if (empty($header_size)) {
             return;
         }
-        $this->header_raw = substr($return, 0, $header_size);
-        $this->header = $this->getHeaders($this->header_raw);
+        $this->rawHeader = substr($return, 0, $header_size);
+        $this->header = $this->getHeaders($this->rawHeader);
         if ($curlHelper->followLocation && 
             $this->header['location']
         ) {
-             $location = new  Curl_Helper();
+             $location = new  CurlHelper();
              $location->set_options($this->header['location']);
              $respondLocation = $location->run(); 
              $this->body = $respondLocation->body;
