@@ -268,7 +268,7 @@ class CurlResponder
         $this->rawHeader = substr($return, 0, $header_size);
         $this->header = $this->getHeaders($this->rawHeader);
         if ($curlHelper->manualFollow
-            && $this->header['location']
+            && isset($this->header['location'])
         ) {
             $location = new  CurlHelper();
             $location->setOptions($this->header['location']);
