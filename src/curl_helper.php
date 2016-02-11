@@ -15,7 +15,7 @@ class CurlHelper implements CurlInterface
     /**
      * @var custom follow location
      */
-    public $followLocation = false;
+    public $manualFollow = false;
 
     /**
      * @var default curl options
@@ -46,7 +46,7 @@ class CurlHelper implements CurlInterface
     /**
      * @param array $options curl option
      */
-    public function set($options)
+    public function set($options = null)
     {
         //assing custom options
         if (is_array($options)) {
@@ -73,16 +73,21 @@ class CurlHelper implements CurlInterface
     }
 
     /**
-     * reset follow location
+     * Set manual follow location
      */
-    public function resetFollowLocation()
+    public function setManualFollow()
     {
-        if (!empty($this->opts[CURLOPT_CUSTOMREQUEST]) 
-            && 'GET' !== $this->opts[CURLOPT_CUSTOMREQUEST] 
-            && !empty($this->opts[CURLOPT_FOLLOWLOCATION])
+        $isNotGet = ( 
+            ( !empty($this->_opts[CURLOPT_CUSTOMREQUEST])            
+              && 'GET' !== $this->_opts[CURLOPT_CUSTOMREQUEST] 
+            )
+            || !empty($this->_opts[CURLOPT_POST]) 
+        );
+        if ( $isNotGet
+            && !empty($this->_opts[CURLOPT_FOLLOWLOCATION])
         ) {
             $this->set(array(CURLOPT_FOLLOWLOCATION=>false));
-            $this->followLocation = true;
+            $this->manualFollow = true;
         }
     }
 
@@ -94,7 +99,7 @@ class CurlHelper implements CurlInterface
      */
     public function process($more=array())
     {
-        $this->resetFollowLocation();
+        $this->setManualFollow();
         $oCurl = $this->getInstance();
         $return = curl_exec($oCurl);
         $r = new CurlResponder($return, $this, $more);
@@ -107,6 +112,9 @@ class CurlHelper implements CurlInterface
      */
     public function getInstance()
     {
+        if (empty($this->_opts)) {
+            return false;
+        }
         if (is_null($this->_oCurl)) {
             $this->_oCurl = curl_init();
             curl_setopt_array($this->_oCurl, $this->_opts);
@@ -123,6 +131,7 @@ class CurlHelper implements CurlInterface
             curl_close($this->_oCurl);
         }
         $this->_oCurl = null;
+        $this->_opts = array();
     }
 
     public function __destruct()
@@ -164,20 +173,35 @@ class MultiCurlHelper
      */
     public function process($more=array())
     {
-        $mh = curl_multi_init();
         if (empty($this->_curlMap) || !is_array($this->_curlMap)) {
             return false;
         }
+        $multiCurl = curl_multi_init();
         foreach ($this->_curlMap as $hash=>$data) {
-            $data->obj->resetFollowLocation();
+            $data->obj->setManualFollow();
             $oCurl = $data->obj->getInstance();
-            curl_multi_add_handle($mh, $oCurl);
+            if ($oCurl) {
+                curl_multi_add_handle($multiCurl, $oCurl);
+            } else {
+                unset($this->_curlMap[$hash]);
+            }
         }
         // set run flag
         $running = null;
         do {
-            curl_multi_exec($mh, $running);
-        } while ($running > 0);
+            $multiExec = curl_multi_exec($multiCurl, $running);
+        } while ($multiExec === CURLM_CALL_MULTI_PERFORM);
+        while ($running && $multiExec === CURLM_OK) {
+            if (curl_multi_select($multiCurl) == -1) {
+                usleep(50000);
+            }
+            do {
+                $multiExec = curl_multi_exec(
+                    $multiCurl, 
+                    $running
+                );
+            } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
+        }
         foreach ($this->_curlMap as $hash=>$data) {
             $oCurl = $data->obj->getInstance();
             $return = curl_multi_getcontent($oCurl);
@@ -185,9 +209,9 @@ class MultiCurlHelper
             if (is_callable($data->func)) {
                 call_user_func($data->func, $r);
             }
-            curl_multi_remove_handle($mh, $oCurl);
+            curl_multi_remove_handle($multiCurl, $oCurl);
         }
-        curl_multi_close($mh);
+        curl_multi_close($multiCurl);
         $this->_curlMap = array();
         return true;
     }
@@ -243,13 +267,13 @@ class CurlResponder
         }
         $this->rawHeader = substr($return, 0, $header_size);
         $this->header = $this->getHeaders($this->rawHeader);
-        if ($curlHelper->followLocation  
+        if ($curlHelper->manualFollow
             && $this->header['location']
         ) {
-             $location = new  CurlHelper();
-             $location->set_options($this->header['location']);
-             $respondLocation = $location->run(); 
-             $this->body = $respondLocation->body;
+            $location = new  CurlHelper();
+            $location->setOptions($this->header['location']);
+            $respondLocation = $location->process(); 
+            $this->body = $respondLocation->body;
         } elseif (!empty($this->header['content-encoding']) 
             && 'gzip' === $this->header['content-encoding']
         ) {

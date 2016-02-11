@@ -22,4 +22,24 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $this->assertContains('yahoo', $r->body); 
         $this->assertTrue(empty($r->errno));
     }
+
+    function testFollowLocationWithPut()
+    {
+        $curl = PMVC\plug('curl')->put('http://tw.yahoo.com');
+        $curl -> setManualFollow();
+        $options = $curl->set();
+        $curl->clean();
+        $this->assertFalse($options[CURLOPT_FOLLOWLOCATION]);
+        $this->assertTrue($curl->manualFollow);
+    }
+
+    function testFollowLocationWithPost()
+    {
+        $curl = PMVC\plug('curl')->post('http://tw.yahoo.com');
+        $curl -> setManualFollow();
+        $options = $curl->set();
+        $curl->clean();
+        $this->assertFalse($options[CURLOPT_FOLLOWLOCATION]);
+        $this->assertTrue($curl->manualFollow);
+    }
 }
