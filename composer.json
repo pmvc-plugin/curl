@@ -1,6 +1,6 @@
 {
     "name": "pmvc-plugin/curl",
-    "description": "Hello World Plugin, show you how the pmvc work",
+    "description": "PMVC Easy CURL library",
     "type": "library",
     "homepage": "https://github.com/pmvc-plugin/curl",
     "keywords": ["curl", "pmvc", "plug-in"],

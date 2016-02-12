@@ -9,7 +9,7 @@ interface CurlInterface
 }
 
 /**
-* a curl wraper for ci
+* Curl helper library 
 */
 class CurlHelper implements CurlInterface
 {
@@ -29,8 +29,8 @@ class CurlHelper implements CurlInterface
     private $_oCurl = null;
 
     /**
-    * set curl option
-     *
+    * Set curl option
+    *
     * @param  string $url
     * @param  array  $options curl option
     * @see    http://php.net/manual/en/function.curl-setopt.php
@@ -59,7 +59,7 @@ class CurlHelper implements CurlInterface
     }
 
     /**
-     * get default options
+     * Get default options
      */
     public function getDefaultOptions()
     {
@@ -93,9 +93,8 @@ class CurlHelper implements CurlInterface
     }
 
     /**
-     * return curl execute result
+     * Return curl execute result
      *
-     * @see    http://php.net/manual/en/function.curl-getinfo.php
      * @return CurlResponder
      */
     public function process($more=array())
@@ -124,7 +123,7 @@ class CurlHelper implements CurlInterface
     }
 
     /**
-     * reset  curl resource
+     * Reset  curl resource
      */
     public function clean()
     {
@@ -185,7 +184,7 @@ class MultiCurlHelper
     }
 
     /**
-     * execute multi curl
+     * Execute multi curl
      *
      * @return hasmap by CurlResponder
      */
@@ -335,6 +334,9 @@ class CurlResponder
 
 class CurlInfo
 {
+    /**
+     * @see    http://php.net/manual/en/function.curl-getinfo.php
+     */
     static function getKey($key)
     {
         $arr = array(
@@ -348,11 +350,6 @@ class CurlInfo
         CURLINFO_STARTTRANSFER_TIME=>'STARTTRANSFER_TIME',
         CURLINFO_REDIRECT_COUNT=>'REDIRECT_COUNT',
         CURLINFO_REDIRECT_TIME=>'REDIRECT_TIME',
-        CURLINFO_REDIRECT_URL=>'REDIRECT_URL',
-        CURLINFO_PRIMARY_IP=>'PRIMARY_IP',
-        CURLINFO_PRIMARY_PORT=>'PRIMARY_PORT',
-        CURLINFO_LOCAL_IP=>'LOCAL_IP',
-        CURLINFO_LOCAL_PORT=>'LOCAL_PORT',
         CURLINFO_SIZE_UPLOAD=>'SIZE_UPLOAD',
         CURLINFO_SIZE_DOWNLOAD=>'SIZE_DOWNLOAD',
         CURLINFO_SPEED_DOWNLOAD=>'SPEED_DOWNLOAD',
