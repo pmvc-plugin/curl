@@ -12,14 +12,6 @@ class curl extends \PMVC\PlugIn
         $this->setDefaultAlias(new MultiCurlHelper());
     }
 
-    /**
-     * Take a run at destruct for some not run task 
-     * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
-     */
-    public function __destruct()
-    {
-        $this->process();
-    }
 
     private function _add($url, $function, $opts)
     {
@@ -48,7 +40,7 @@ class curl extends \PMVC\PlugIn
     {
         $curl_opt = array(
             CURLOPT_POST=>true,
-            CURLOPT_POSTFIELDS=>$params
+            CURLOPT_POSTFIELDS=>http_build_query($params, '', '&')
         );
         return $this->_add($url, $function, $curl_opt);
     } 

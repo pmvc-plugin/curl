@@ -149,7 +149,7 @@ class MultiCurlHelper
     /**
      * @var array CurlHelper
      */
-    private $_curlMap = array();
+    private $_curls = array();
 
     /**
      * add CurlHelper to Multi_Curl_Helper
@@ -163,7 +163,24 @@ class MultiCurlHelper
             'obj'=>$ocurl,
             'func'=>$function
         );
-        $this->_curlMap[]=$data;
+        $this->_curls[]=$data;
+    }
+
+    /**
+     * Get Curl map
+     */
+     public function getCurls()
+     {
+        return $this->_curls;
+     }
+
+    /**
+     * Take a run at destruct for some not run task 
+     * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
+     */
+    public function __destruct()
+    {
+        $this->process();
     }
 
     /**
@@ -173,18 +190,22 @@ class MultiCurlHelper
      */
     public function process($more=array())
     {
-        if (empty($this->_curlMap) || !is_array($this->_curlMap)) {
+        if (empty($this->_curls) || !is_array($this->_curls)) {
             return false;
         }
         $multiCurl = curl_multi_init();
-        foreach ($this->_curlMap as $hash=>$data) {
+        foreach ($this->_curls as $hash=>$data) {
             $data->obj->setManualFollow();
             $oCurl = $data->obj->getInstance();
             if ($oCurl) {
                 curl_multi_add_handle($multiCurl, $oCurl);
             } else {
-                unset($this->_curlMap[$hash]);
+                unset($this->_curls[$hash]);
             }
+        }
+        if (empty($this->_curls)) {
+            curl_multi_close($multiCurl);
+            return false;
         }
         // set run flag
         $running = null;
@@ -202,7 +223,7 @@ class MultiCurlHelper
                 );
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
-        foreach ($this->_curlMap as $hash=>$data) {
+        foreach ($this->_curls as $hash=>$data) {
             $oCurl = $data->obj->getInstance();
             $return = curl_multi_getcontent($oCurl);
             $r = new CurlResponder($return, $data->obj, $more);
@@ -212,7 +233,7 @@ class MultiCurlHelper
             curl_multi_remove_handle($multiCurl, $oCurl);
         }
         curl_multi_close($multiCurl);
-        $this->_curlMap = array();
+        $this->_curls = array();
         return true;
     }
 }
