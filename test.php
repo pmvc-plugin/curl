@@ -1,7 +1,9 @@
 <?php
+namespace PMVC\PlugIn\curl;
+use PMVC;
+use PHPUnit_Framework_TestCase;
 PMVC\Load::plug();
 PMVC\setPlugInFolder('../');
-use PMVC\PlugIn\curl\CurlHelper;
 class CurlTest extends PHPUnit_Framework_TestCase
 {
     function testGet()
@@ -41,5 +43,13 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl->clean();
         $this->assertFalse($options[CURLOPT_FOLLOWLOCATION]);
         $this->assertTrue($curl->manualFollow);
+    }
+
+    function testGetCurlInfoKey()
+    {
+        $name = array(
+            CURLINFO_EFFECTIVE_URL=>CurlInfo::getKey(CURLINFO_EFFECTIVE_URL),
+        );
+        $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'EFFECTIVE_URL');
     }
 }
