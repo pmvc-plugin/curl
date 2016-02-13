@@ -175,6 +175,14 @@ class MultiCurlHelper
      }
 
     /**
+     * Get Curl map
+     */
+     public function cleanCurls()
+     {
+        $this->_curls = array();
+     }
+
+    /**
      * Take a run at destruct for some not run task 
      * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
      */
@@ -233,7 +241,7 @@ class MultiCurlHelper
             curl_multi_remove_handle($multiCurl, $oCurl);
         }
         curl_multi_close($multiCurl);
-        $this->_curls = array();
+        $this->cleanCurls();
         return true;
     }
 }
