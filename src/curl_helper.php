@@ -185,14 +185,6 @@ class MultiCurlHelper
         $this->_curls = array();
      }
 
-    /**
-     * Take a run at destruct for some not run task 
-     * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
-     */
-    public function __destruct()
-    {
-        $this->process();
-    }
 
     /**
      * Execute multi curl

@@ -60,4 +60,13 @@ class curl extends \PMVC\PlugIn
         );
         return $this->_add($url, $function, $curl_opt);
     }
+
+    /**
+     * Take a run at destruct for some not run task 
+     * http://stackoverflow.com/questions/230245/destruct-visibility-for-php
+     */
+    public function __destruct()
+    {
+        $this->process();
+    }
 }
