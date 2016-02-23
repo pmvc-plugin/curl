@@ -248,6 +248,11 @@ class MultiCurlHelper
 class CurlResponder
 {
     /**
+     * @var curl helper 
+     */
+    public $helper;
+
+    /**
      * @var http respone code
      */
     public $code;
@@ -283,6 +288,7 @@ class CurlResponder
     public function __construct($return, $curlHelper, $more=array())
     {
         $oCurl = $curlHelper->getInstance();
+        $this->helper = $curlHelper;
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);

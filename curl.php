@@ -12,15 +12,18 @@ class curl extends \PMVC\PlugIn
         $this->setDefaultAlias(new MultiCurlHelper());
     }
 
-
     private function _add($url, $function, $opts)
     {
-        $oCurl = new CurlHelper();
+        if (!empty($this['session'])) {
+            $oCurl = $this['session'];
+            unset($this['session']);
+        } else {
+            $oCurl = new CurlHelper();
+        }
         $oCurl->setOptions($url, $opts);
         $this->add($oCurl, $function);
         return $oCurl;
     }
-
 
     public function get($url=null, $function=null)
     {
@@ -59,6 +62,17 @@ class curl extends \PMVC\PlugIn
             CURLOPT_CUSTOMREQUEST=>'OPTIONS'
         );
         return $this->_add($url, $function, $curl_opt);
+    }
+
+    public function getCookie(CurlResponder $responder)
+    {
+        return [
+            CURLOPT_COOKIE=>
+                join(
+                    ';',
+                    $responder->header['set-cookie']
+                )
+        ];
     }
 
     /**
