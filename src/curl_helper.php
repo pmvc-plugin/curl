@@ -320,18 +320,35 @@ class CurlResponder
      */
     public function getHeaders($str)
     {
-        $headers = str_replace("\r", "", $str);
-        $headers = explode("\n", $headers);
+        $headers = explode("\r\n", $str);
+        $multi = array();
         $headerdata = array();
         foreach ($headers as $value) {
             $header = explode(": ", $value);
-            if (!empty($header[0]) && empty($header[1])) {
+            if (!empty($header[0]) && !isset($header[1])) {
+                if (!empty($headerdata['status'])) {
+                    $multi[] = $headerdata;
+                    $headerdata = array();
+                }
                 $headerdata['status'] = $header[0];
             } elseif (!empty($header[0]) && !empty($header[1])) {
-                $headerdata[strtolower($header[0])] = $header[1];
+                $key = strtolower($header[0]);
+                if (empty($headerdata[$key])) {
+                    $headerdata[$key] = $header[1];
+                } else {
+                    if (!is_array($headerdata[$key])) {
+                        $headerdata[$key] = [$headerdata[$key]];
+                    }
+                    $headerdata[$key][] = $header[1];
+                }
             }
         }
-        return $headerdata;
+        if (!empty($multi)) {
+            $multi[] = $headerdata;
+            return $multi;
+        } else {
+            return $headerdata;
+        }
     }
 }
 

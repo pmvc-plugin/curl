@@ -52,4 +52,25 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'EFFECTIVE_URL');
     }
+
+    function testParseMultiHeader()
+    {
+        $arr = array(
+            'a: 111',
+            'b: 222',
+            'c: 333'
+        );
+        $expectedArr = array(
+            'a'=>'111',
+            'b'=>'222',
+            'c'=>'333',
+        );
+        $str = join("\r\n",$arr);
+        $curl = new CurlHelper(); 
+        $curl->setOptions('',array());
+        $curl->getInstance();
+        $curlR = new CurlResponder('', $curl);
+        $headers = $curlR->getHeaders($str);
+        $this->assertEquals($expectedArr, $headers);
+    }
 }
