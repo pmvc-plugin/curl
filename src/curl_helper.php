@@ -5,7 +5,7 @@ use SplObjectStorage;
 
 interface CurlInterface 
 {
-    public function setOptions($url, $options=array(), $function=null);
+    public function setOptions($url, callable $function=null, array $options=array());
     public function process($more=array());
 }
 
@@ -22,7 +22,7 @@ class CurlHelper implements CurlInterface
     /**
      * @var function 
      */
-    public $function;
+    private $_function;
 
     /**
      * @var default curl options
@@ -43,11 +43,14 @@ class CurlHelper implements CurlInterface
     * @see    https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
     * @return curl_setopt_array result
     */
-    public function setOptions($url, $options=array(), $function=null)
-    {
+    public function setOptions(
+        $url, 
+        callable $function=null, 
+        array $options=array()
+    ) {
         $this->_opts = $this->getDefaultOptions();
         $options[CURLOPT_URL]=$url;
-        $this->function = $function;
+        $this->_function = $function;
         return $this->set($options);
     }
 
@@ -104,17 +107,20 @@ class CurlHelper implements CurlInterface
      *
      * @return CurlResponder
      */
-    public function process($more=array())
+    public function process($more=array(), $func='curl_exec')
     {
         $this->setManualFollow();
         $oCurl = $this->getInstance();
         if (!$oCurl) {
             return !trigger_error('Do not set any CURL options');
         }
-        $return = curl_exec($oCurl);
+        $return = call_user_func($func,$oCurl);
         $r = new CurlResponder($return, $this, $more);
+        if (is_callable($this->_function)) {
+            call_user_func($this->_function, $r, $this);
+        }
         $this->clean();
-        return $r;
+        return true;
     }
 
     /**
@@ -209,7 +215,6 @@ class MultiCurlHelper
         while ($this->_curls->valid()) {
             $obj = $this->_curls->current();
             $this->_curls->next();
-            $obj->setManualFollow();
             $oCurl = $obj->getInstance();
             if (!empty($oCurl)) {
                 curl_multi_add_handle($multiCurl, $oCurl);
@@ -238,13 +243,11 @@ class MultiCurlHelper
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
         foreach ($this->_curls as $obj) {
-            $oCurl = $obj->getInstance();
-            $return = curl_multi_getcontent($oCurl);
-            $r = new CurlResponder($return, $obj, $more);
-            if (is_callable($obj->function)) {
-                call_user_func($obj->function, $r);
-            }
-            curl_multi_remove_handle($multiCurl, $oCurl);
+            $obj->process($more, function($oCurl) use ($multiCurl){
+                $return = curl_multi_getcontent($oCurl);
+                curl_multi_remove_handle($multiCurl, $oCurl);
+                return $return;
+            });
         }
         curl_multi_close($multiCurl);
         $this->clean();
@@ -258,11 +261,6 @@ class MultiCurlHelper
  */
 class CurlResponder
 {
-    /**
-     * @var curl helper 
-     */
-    public $helper;
-
     /**
      * @var http respone code
      */
@@ -299,7 +297,6 @@ class CurlResponder
     public function __construct($return, $curlHelper, $more=array())
     {
         $oCurl = $curlHelper->getInstance();
-        $this->helper = $curlHelper;
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
@@ -311,10 +308,10 @@ class CurlResponder
         if ($curlHelper->manualFollow
             && isset($this->header['location'])
         ) {
-            $location = new  CurlHelper();
-            $location->setOptions($this->header['location']);
-            $respondLocation = $location->process(); 
-            $this->body = $respondLocation->body;
+            $curlHelper->setOptions($this->header['location'], null, function($r){
+                $this->body = $r->body;
+            });
+            $curlHelper->process(); 
         } elseif (!empty($this->header['content-encoding']) 
             && 'gzip' === $this->header['content-encoding']
         ) {

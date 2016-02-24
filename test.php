@@ -21,10 +21,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
     function testSigleCurl()
     {
         $curl = new CurlHelper();
-        $curl->setOptions('http://tw.yahoo.com');
-        $r = $curl->process();
-        $this->assertContains('yahoo', $r->body); 
-        $this->assertTrue(empty($r->errno));
+        $curl->setOptions('http://tw.yahoo.com', function($r){
+            $this->assertContains('yahoo', $r->body); 
+            $this->assertTrue(empty($r->errno));
+        });
+        $curl->process();
     }
 
     function testFollowLocationWithPut()
@@ -69,7 +70,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         );
         $str = join("\r\n",$arr);
         $curl = new CurlHelper(); 
-        $curl->setOptions('',array());
+        $curl->setOptions('');
         $curl->getInstance();
         $curlR = new CurlResponder('', $curl);
         $headers = $curlR->getHeaders($str);
@@ -84,7 +85,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $testServer = 'http://posttestserver.com/post.php?dir=example';
         $curl->post($testServer, function($r){
             var_dump($r);
-        }, array('myfile'=>$file), true);
+        }, array('submitted'=>$file), true);
         $curl->process();
     }
 }

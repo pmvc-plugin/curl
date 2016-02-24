@@ -20,7 +20,7 @@ class curl extends \PMVC\PlugIn
         } else {
             $oCurl = new CurlHelper();
         }
-        $oCurl->setOptions($url, $opts, $function);
+        $oCurl->setOptions($url, $function, $opts);
         $this->add($oCurl);
         return $oCurl;
     }
