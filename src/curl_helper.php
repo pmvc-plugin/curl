@@ -109,10 +109,9 @@ class CurlHelper implements CurlInterface
      */
     public function process($more=[], $func='curl_exec')
     {
-        $this->setManualFollow();
         $oCurl = $this->getInstance();
         if (!$oCurl) {
-            return !trigger_error('Do not set any CURL options');
+            return !trigger_error('Not set any CURL option yet.');
         }
         $return = call_user_func($func,$oCurl);
         $r = new CurlResponder($return, $this, $more);
@@ -134,6 +133,7 @@ class CurlHelper implements CurlInterface
         if (is_null($this->_oCurl)) {
             $this->_oCurl = curl_init();
             curl_setopt_array($this->_oCurl, $this->_opts);
+            $this->setManualFollow();
         }
         return $this->_oCurl;
     }
