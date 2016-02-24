@@ -139,6 +139,14 @@ class CurlHelper implements CurlInterface
     }
 
     /**
+     * @return callback
+     */
+     public function getCallback()
+     {
+        return $this->_function;
+     }
+
+    /**
      * Reset  curl resource
      */
     public function clean()
