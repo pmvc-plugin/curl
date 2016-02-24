@@ -211,7 +211,7 @@ class MultiCurlHelper
     /**
      * Execute multi curl
      *
-     * @return hasmap by CurlResponder
+     * @return bool 
      */
     public function process($more=[])
     {
