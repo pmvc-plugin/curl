@@ -5,8 +5,8 @@ use SplObjectStorage;
 
 interface CurlInterface 
 {
-    public function setOptions($url, callable $function=null, array $options=array());
-    public function process($more=array());
+    public function setOptions($url, callable $function=null, array $options=[]);
+    public function process($more=[]);
 }
 
 /**
@@ -27,7 +27,7 @@ class CurlHelper implements CurlInterface
     /**
      * @var default curl options
      */
-    private $_opts = array();
+    private $_opts = [];
 
     /**
      * @var curl resource
@@ -46,7 +46,7 @@ class CurlHelper implements CurlInterface
     public function setOptions(
         $url, 
         callable $function=null, 
-        array $options=array()
+        array $options=[]
     ) {
         $this->_opts = $this->getDefaultOptions();
         $options[CURLOPT_URL]=$url;
@@ -73,14 +73,14 @@ class CurlHelper implements CurlInterface
      */
     public function getDefaultOptions()
     {
-        return array(
+        return [ 
              CURLOPT_HEADER         => true
             ,CURLOPT_VERBOSE        => false
             ,CURLOPT_RETURNTRANSFER => true
             ,CURLOPT_FOLLOWLOCATION => true
             ,CURLOPT_SSL_VERIFYHOST => false
             ,CURLOPT_SSL_VERIFYPEER => false
-        );
+        ];
     }
 
     /**
@@ -97,7 +97,7 @@ class CurlHelper implements CurlInterface
         if ( $isNotGet
             && !empty($this->_opts[CURLOPT_FOLLOWLOCATION])
         ) {
-            $this->set(array(CURLOPT_FOLLOWLOCATION=>false));
+            $this->set([CURLOPT_FOLLOWLOCATION=>false]);
             $this->manualFollow = true;
         }
     }
@@ -107,7 +107,7 @@ class CurlHelper implements CurlInterface
      *
      * @return CurlResponder
      */
-    public function process($more=array(), $func='curl_exec')
+    public function process($more=[], $func='curl_exec')
     {
         $this->setManualFollow();
         $oCurl = $this->getInstance();
@@ -147,7 +147,7 @@ class CurlHelper implements CurlInterface
             curl_close($this->_oCurl);
         }
         $this->_oCurl = null;
-        $this->_opts = array();
+        $this->_opts = [];
     }
 
     public function __destruct()
@@ -205,7 +205,7 @@ class MultiCurlHelper
      *
      * @return hasmap by CurlResponder
      */
-    public function process($more=array())
+    public function process($more=[])
     {
         if (empty($this->_curls)) {
             return false;
@@ -294,7 +294,7 @@ class CurlResponder
     /**
      * construct
      */
-    public function __construct($return, $curlHelper, $more=array())
+    public function __construct($return, $curlHelper, $more=[])
     {
         $oCurl = $curlHelper->getInstance();
         $this->errno = curl_errno($oCurl);
@@ -322,8 +322,8 @@ class CurlResponder
         if (!empty($more)) {
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
-                $info[0] = CurlInfo::getKey($key);
-                $info[1] = curl_getinfo($oCurl, $key);
+                $info[0] = curl_getinfo($oCurl, $key);
+                $info[1] = CurlInfo::getKey($key);
                 $this->more[$key] = $info;
             }
         }
@@ -335,14 +335,14 @@ class CurlResponder
     public function getHeaders($str)
     {
         $headers = explode("\r\n", $str);
-        $multi = array();
-        $headerdata = array();
+        $multi = [];
+        $headerdata = [];
         foreach ($headers as $value) {
             $header = explode(": ", $value);
             if (!empty($header[0]) && !isset($header[1])) {
                 if (!empty($headerdata['status'])) {
                     $multi[] = $headerdata;
-                    $headerdata = array();
+                    $headerdata = [];
                 }
                 $headerdata['status'] = $header[0];
             } elseif (!empty($header[0]) && !empty($header[1])) {
@@ -373,7 +373,7 @@ class CurlInfo
      */
     static function getKey($key)
     {
-        $arr = array(
+        $arr = [ 
         CURLINFO_EFFECTIVE_URL=>'EFFECTIVE_URL',
         CURLINFO_HTTP_CODE=>'HTTP_CODE',
         CURLINFO_FILETIME=>'FILETIME',
@@ -396,7 +396,7 @@ class CurlInfo
         CURLINFO_CONTENT_LENGTH_UPLOAD=>'CONTENT_LENGTH_UPLOAD',
         CURLINFO_CONTENT_TYPE=>'CONTENT_TYPE',
         CURLINFO_PRIVATE=>'PRIVATE'
-        );
+        ];
         if (isset($arr[$key])) {
             return $arr[$key];
         } else {
