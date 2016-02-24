@@ -1,10 +1,11 @@
 <?php
 namespace PMVC\PlugIn\curl;
 use SplFixedArray;
+use SplObjectStorage;
 
 interface CurlInterface 
 {
-    public function setOptions($url, $options=array());
+    public function setOptions($url, $options=array(), $function=null);
     public function process($more=array());
 }
 
@@ -17,6 +18,11 @@ class CurlHelper implements CurlInterface
      * @var custom follow location
      */
     public $manualFollow = false;
+
+    /**
+     * @var function 
+     */
+    public $function;
 
     /**
      * @var default curl options
@@ -37,10 +43,11 @@ class CurlHelper implements CurlInterface
     * @see    https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
     * @return curl_setopt_array result
     */
-    public function setOptions($url, $options=array())
+    public function setOptions($url, $options=array(), $function=null)
     {
         $this->_opts = $this->getDefaultOptions();
         $options[CURLOPT_URL]=$url;
+        $this->function = $function;
         return $this->set($options);
     }
 
@@ -152,7 +159,12 @@ class MultiCurlHelper
     /**
      * @var array CurlHelper
      */
-    private $_curls = array();
+    private $_curls;
+
+    public function __construct()
+    {
+       $this->_curls = new SplObjectStorage();
+    }
 
     /**
      * add CurlHelper to Multi_Curl_Helper
@@ -160,13 +172,9 @@ class MultiCurlHelper
      * @param $ocurl
      * @param $key a hashmap for CurlHelper, need assign key, the return result will reference
      */
-    public function add($ocurl, $function=null)
+    public function add($ocurl)
     {
-        $data = (object)array(
-            'obj'=>$ocurl,
-            'func'=>$function
-        );
-        $this->_curls[]=$data;
+        $this->_curls->attach($ocurl);
     }
 
     /**
@@ -180,9 +188,9 @@ class MultiCurlHelper
     /**
      * Get Curl map
      */
-     public function cleanCurls()
+     public function clean()
      {
-        $this->_curls = array();
+        $this->_curls->removeAll($this->_curls);
      }
 
 
@@ -193,17 +201,20 @@ class MultiCurlHelper
      */
     public function process($more=array())
     {
-        if (empty($this->_curls) || !is_array($this->_curls)) {
+        if (empty($this->_curls)) {
             return false;
         }
         $multiCurl = curl_multi_init();
-        foreach ($this->_curls as $hash=>$data) {
-            $data->obj->setManualFollow();
-            $oCurl = $data->obj->getInstance();
-            if ($oCurl) {
+        $this->_curls->rewind();
+        while ($this->_curls->valid()) {
+            $obj = $this->_curls->current();
+            $this->_curls->next();
+            $obj->setManualFollow();
+            $oCurl = $obj->getInstance();
+            if (!empty($oCurl)) {
                 curl_multi_add_handle($multiCurl, $oCurl);
             } else {
-                unset($this->_curls[$hash]);
+                $this->_curls->detach($obj);
             }
         }
         if (empty($this->_curls)) {
@@ -226,17 +237,17 @@ class MultiCurlHelper
                 );
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
-        foreach ($this->_curls as $hash=>$data) {
-            $oCurl = $data->obj->getInstance();
+        foreach ($this->_curls as $obj) {
+            $oCurl = $obj->getInstance();
             $return = curl_multi_getcontent($oCurl);
-            $r = new CurlResponder($return, $data->obj, $more);
-            if (is_callable($data->func)) {
-                call_user_func($data->func, $r);
+            $r = new CurlResponder($return, $obj, $more);
+            if (is_callable($obj->function)) {
+                call_user_func($obj->function, $r);
             }
             curl_multi_remove_handle($multiCurl, $oCurl);
         }
         curl_multi_close($multiCurl);
-        $this->cleanCurls();
+        $this->clean();
         return true;
     }
 }

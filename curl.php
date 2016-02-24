@@ -20,8 +20,8 @@ class curl extends \PMVC\PlugIn
         } else {
             $oCurl = new CurlHelper();
         }
-        $oCurl->setOptions($url, $opts);
-        $this->add($oCurl, $function);
+        $oCurl->setOptions($url, $opts, $function);
+        $this->add($oCurl);
         return $oCurl;
     }
 
@@ -39,11 +39,15 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     } 
 
-    public function post($url=null, $function=null, $params=array())
+    public function post($url=null, $function=null, $params=array(), $useMultiPartFormData=false)
     {
+        if (!$useMultiPartFormData) {
+            // for non-upload file case
+            $params = http_build_query($params, '', '&');
+        }
         $curl_opt = array(
             CURLOPT_POST=>true,
-            CURLOPT_POSTFIELDS=>http_build_query($params, '', '&')
+            CURLOPT_POSTFIELDS=>$params
         );
         return $this->_add($url, $function, $curl_opt);
     } 

@@ -6,6 +6,8 @@ PMVC\Load::plug();
 PMVC\setPlugInFolder('../');
 class CurlTest extends PHPUnit_Framework_TestCase
 {
+    private $_plug='curl';
+
     function testGet()
     {
         $phpunit = $this;
@@ -72,5 +74,17 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curlR = new CurlResponder('', $curl);
         $headers = $curlR->getHeaders($str);
         $this->assertEquals($expectedArr, $headers);
+    }
+
+    function testUploadFile()
+    {
+        return;
+        $file = new \CURLFile(__DIR__.'/test/resources/upload_testfile.txt');
+        $curl = PMVC\plug('curl');
+        $testServer = 'http://posttestserver.com/post.php?dir=example';
+        $curl->post($testServer, function($r){
+            var_dump($r);
+        }, array('myfile'=>$file), true);
+        $curl->process();
     }
 }
