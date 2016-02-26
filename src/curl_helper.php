@@ -234,6 +234,8 @@ class MultiCurlHelper
             curl_multi_close($multiCurl);
             return false;
         }
+        $curls = clone $this->_curls;
+        $this->clean();
         // set run flag
         $running = null;
         do {
@@ -250,7 +252,7 @@ class MultiCurlHelper
                 );
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
-        foreach ($this->_curls as $obj) {
+        foreach ($curls as $obj) {
             $obj->process($more, function($oCurl) use ($multiCurl){
                 $return = curl_multi_getcontent($oCurl);
                 curl_multi_remove_handle($multiCurl, $oCurl);
@@ -258,7 +260,6 @@ class MultiCurlHelper
             });
         }
         curl_multi_close($multiCurl);
-        $this->clean();
         return true;
     }
 }
