@@ -207,7 +207,6 @@ class MultiCurlHelper
         $this->_curls->removeAll($this->_curls);
      }
 
-
     /**
      * Execute multi curl
      *
@@ -218,24 +217,47 @@ class MultiCurlHelper
         if (empty($this->_curls)) {
             return false;
         }
-        $multiCurl = curl_multi_init();
-        $this->_curls->rewind();
-        while ($this->_curls->valid()) {
-            $obj = $this->_curls->current();
-            $this->_curls->next();
+        $curlPool = clone $this->_curls;
+        $this->clean();
+        $curlPool->rewind();
+        $executePool = new SplObjectStorage();
+        $i = 0;
+        $max = 100;
+        while ($curlPool->valid()) {
+            $obj = $curlPool->current();
+            $curlPool->next();
             $oCurl = $obj->getInstance();
             if (!empty($oCurl)) {
-                curl_multi_add_handle($multiCurl, $oCurl);
+                $executePool->attach($obj);
             } else {
-                $this->_curls->detach($obj);
+                $curlPool->detach($obj);
+            }
+            $i++;
+            if ($i>=100) {
+                $this->_process($more,$executePool);
             }
         }
-        if (empty($this->_curls)) {
-            curl_multi_close($multiCurl);
-            return false;
+        if (count($executePool)) {
+            $this->_process($more,$executePool);
         }
-        $curls = clone $this->_curls;
-        $this->clean();
+        $curlPool->removeAll($curlPool);
+    }
+
+    /**
+     * Execute multi curl
+     *
+     * @return bool 
+     */
+    private function _process($more,$executePool)
+    {
+        $multiCurl = curl_multi_init();
+        $executePool->rewind();
+        while ($executePool->valid()) {
+            $obj = $executePool->current();
+            $executePool->next();
+            $oCurl = $obj->getInstance();
+            curl_multi_add_handle($multiCurl, $oCurl);
+        }
         // set run flag
         $running = null;
         do {
@@ -252,7 +274,7 @@ class MultiCurlHelper
                 );
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
-        foreach ($curls as $obj) {
+        foreach ($executePool as $obj) {
             $obj->process($more, function($oCurl) use ($multiCurl){
                 $return = curl_multi_getcontent($oCurl);
                 curl_multi_remove_handle($multiCurl, $oCurl);
@@ -260,6 +282,7 @@ class MultiCurlHelper
             });
         }
         curl_multi_close($multiCurl);
+        $executePool->removeAll($executePool);
         return true;
     }
 }
