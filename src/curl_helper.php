@@ -229,18 +229,22 @@ class MultiCurlHelper
             $oCurl = $obj->getInstance();
             if (!empty($oCurl)) {
                 $executePool->attach($obj);
-            } else {
+            } else { 
                 $curlPool->detach($obj);
             }
             $i++;
-            if ($i>=100) {
+            if ($i>=$max) {
                 $this->_process($more,$executePool);
+                $i=0;
+                $curlPool->removeAll($executePool);
+                $executePool->removeAll($executePool);
             }
         }
         if (count($executePool)) {
             $this->_process($more,$executePool);
         }
         $curlPool->removeAll($curlPool);
+        $executePool->removeAll($executePool);
     }
 
     /**
@@ -263,6 +267,7 @@ class MultiCurlHelper
         do {
             $multiExec = curl_multi_exec($multiCurl, $running);
         } while ($multiExec === CURLM_CALL_MULTI_PERFORM);
+
         while ($running && $multiExec === CURLM_OK) {
             if (curl_multi_select($multiCurl) == -1) {
                 usleep(50000);
@@ -274,6 +279,7 @@ class MultiCurlHelper
                 );
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
+
         foreach ($executePool as $obj) {
             $obj->process($more, function($oCurl) use ($multiCurl){
                 $return = curl_multi_getcontent($oCurl);
@@ -281,6 +287,7 @@ class MultiCurlHelper
                 return $return;
             });
         }
+
         curl_multi_close($multiCurl);
         $executePool->removeAll($executePool);
         return true;
