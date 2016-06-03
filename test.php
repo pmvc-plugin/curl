@@ -3,7 +3,8 @@ namespace PMVC\PlugIn\curl;
 use PMVC;
 use PHPUnit_Framework_TestCase;
 PMVC\Load::plug();
-PMVC\setPlugInFolder('../');
+PMVC\addPlugInFolders(['../']);
+
 class CurlTest extends PHPUnit_Framework_TestCase
 {
     private $_plug='curl';

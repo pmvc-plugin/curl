@@ -41,7 +41,7 @@ class CurlHelper implements CurlInterface
     * @param  array  $options curl option
     * @see    http://php.net/manual/en/function.curl-setopt.php
     * @see    https://github.com/bagder/curl/blob/master/docs/libcurl/symbols-in-versions
-    * @return curl_setopt_array result
+    * @return array result
     */
     public function setOptions(
         $url, 
@@ -132,6 +132,8 @@ class CurlHelper implements CurlInterface
         }
         if (is_null($this->_oCurl)) {
             $this->_oCurl = curl_init();
+            $this->_opts[CURLOPT_URL] = 
+                (string)$this->_opts[CURLOPT_URL];
             curl_setopt_array($this->_oCurl, $this->_opts);
             $this->setManualFollow();
         }
