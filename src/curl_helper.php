@@ -216,8 +216,17 @@ class MultiCurlHelper
      */
     public function process($more=[])
     {
-        if (empty($this->_curls)) {
-            return false;
+        if (!1<count($this->_curls)) {
+            $this->_curls->rewind();
+            $obj = $this->_curls->current();
+            if ($obj) {
+                $oCurl = $obj->getInstance();
+                if ($oCurl) {
+                    $obj->process($more);
+                }
+            }
+            $this->clean();
+            return true;
         }
         $curlPool = clone $this->_curls;
         $this->clean();
@@ -256,8 +265,9 @@ class MultiCurlHelper
      */
     private function _process($more,$executePool)
     {
-        $multiCurl = curl_multi_init();
         $executePool->rewind();
+
+        $multiCurl = curl_multi_init();
         while ($executePool->valid()) {
             $obj = $executePool->current();
             $executePool->next();
@@ -272,7 +282,7 @@ class MultiCurlHelper
 
         while ($running && $multiExec === CURLM_OK) {
             if (curl_multi_select($multiCurl) == -1) {
-                usleep(50000);
+                usleep(30000);
             }
             do {
                 $multiExec = curl_multi_exec(
@@ -410,7 +420,7 @@ class CurlResponder
 class CurlInfo
 {
     /**
-     * @see    http://php.net/manual/en/function.curl-getinfo.php
+     * @see http://php.net/manual/en/function.curl-getinfo.php
      */
     static function getKey($key)
     {

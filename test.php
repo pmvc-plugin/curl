@@ -81,7 +81,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     function testUploadFile()
     {
         $file = new \CURLFile(__DIR__.'/test/resources/upload_testfile.txt');
-        $curl = PMVC\plug('curl');
+        $curl = PMVC\plug($this->_plug);
         $testServer = 'https://file.io';
         $curl->post($testServer, function($r){
             $body = \PMVC\fromJson($r->body); 
@@ -89,6 +89,15 @@ class CurlTest extends PHPUnit_Framework_TestCase
             $this->assertEquals('14 days', $body->expiry);
             $this->assertTrue($body->success);
         }, array('file'=>$file), true);
+        $curl->process();
+    }
+
+    function testProcessWithEmpty()
+    {
+        $curl = PMVC\plug($this->_plug);
+        $o = $curl->get('http://tw.yahoo.com');
+        $o->clean();
+        $this->assertTrue(empty($o->getInstance()));
         $curl->process();
     }
 }
