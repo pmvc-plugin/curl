@@ -11,12 +11,21 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     function testGet()
     {
+        $body = [];
         $phpunit = $this;
-        PMVC\plug('curl')->get('http://tw.yahoo.com',function($r) use ($phpunit){
-            $phpunit->assertContains('yahoo', $r->body); 
+        PMVC\plug('curl')->get('http://tw.yahoo.com',function($r) use (&$body, $phpunit){
+            $body['yahoo'] = $r->body;
+            $phpunit->assertTrue(empty($r->errno));
+        });
+        PMVC\plug('curl')->get('http://google.com',function($r) use (&$body, $phpunit){
+            $body['google'] = $r->body;
             $phpunit->assertTrue(empty($r->errno));
         });
         PMVC\plug('curl')->process();
+        foreach ($body as $k=>$b) {
+            $this->assertContains($k, $b); 
+        }
+
     }
 
     function testSigleCurl()

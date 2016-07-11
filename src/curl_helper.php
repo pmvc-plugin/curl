@@ -216,7 +216,7 @@ class MultiCurlHelper
      */
     public function process($more=[])
     {
-        if (!1<count($this->_curls)) {
+        if (1>=count($this->_curls)) {
             $this->_curls->rewind();
             $obj = $this->_curls->current();
             if ($obj) {
