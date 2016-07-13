@@ -219,13 +219,13 @@ class MultiCurlHelper
         if (1>=count($this->_curls)) {
             $this->_curls->rewind();
             $obj = $this->_curls->current();
+            $this->clean();
             if ($obj) {
                 $oCurl = $obj->getInstance();
                 if ($oCurl) {
                     $obj->process($more);
                 }
             }
-            $this->clean();
             return true;
         }
         $curlPool = clone $this->_curls;
@@ -299,9 +299,8 @@ class MultiCurlHelper
                 return $return;
             });
         }
-
         curl_multi_close($multiCurl);
-        $executePool->removeAll($executePool);
+
         return true;
     }
 }
