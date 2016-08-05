@@ -60,8 +60,9 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     function testGetCurlInfoKey()
     {
+        $plug = \PMVC\plug($this->_plug);
         $name = array(
-            CURLINFO_EFFECTIVE_URL=>CurlInfo::getKey(CURLINFO_EFFECTIVE_URL),
+            CURLINFO_EFFECTIVE_URL=>$plug->infoToStr()->one(CURLINFO_EFFECTIVE_URL),
         );
         $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'EFFECTIVE_URL');
     }

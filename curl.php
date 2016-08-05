@@ -1,7 +1,10 @@
 <?php
 namespace PMVC\PlugIn\curl;
 
-\PMVC\l(__DIR__.'/src/curl_helper.php');
+\PMVC\l(__DIR__.'/src/CurlInterface.php');
+\PMVC\l(__DIR__.'/src/CurlHelper.php');
+\PMVC\l(__DIR__.'/src/CurlResponder.php');
+\PMVC\l(__DIR__.'/src/MultiCurlHelper.php');
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\curl';
 
