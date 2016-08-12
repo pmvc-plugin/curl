@@ -71,7 +71,7 @@ class CurlResponder
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
                 $info[0] = curl_getinfo($oCurl, $key);
-                $info[1] = $pCurl->infoToStr()->one($key);
+                $info[1] = $pCurl->info_to_str()->one($key);
                 $this->more[$key] = $info;
             }
         }

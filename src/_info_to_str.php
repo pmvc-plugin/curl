@@ -1,9 +1,9 @@
 <?php
 namespace PMVC\PlugIn\curl;
 
-${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\infoToStr';
+${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\info_to_str';
 
-class infoToStr
+class info_to_str
 {
     private $_keys = [
         CURLINFO_EFFECTIVE_URL=>'EFFECTIVE_URL',

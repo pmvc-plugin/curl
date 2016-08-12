@@ -62,7 +62,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $plug = \PMVC\plug($this->_plug);
         $name = array(
-            CURLINFO_EFFECTIVE_URL=>$plug->infoToStr()->one(CURLINFO_EFFECTIVE_URL),
+            CURLINFO_EFFECTIVE_URL=>$plug->info_to_str()->one(CURLINFO_EFFECTIVE_URL),
         );
         $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'EFFECTIVE_URL');
     }
@@ -94,11 +94,17 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $curl = PMVC\plug($this->_plug);
         $testServer = 'https://file.io';
         $curl->post($testServer, function($r){
+            if (200!==$r->code) {
+                return !trigger_error(print_r($r,true));
+            }
             $body = \PMVC\fromJson($r->body); 
             $this->assertEquals('https://file.io/'.$body->key, $body->link);
             $this->assertEquals('14 days', $body->expiry);
             $this->assertTrue($body->success);
-        }, array('file'=>$file), true);
+        }, ['file'=>$file], true)->set([
+            CURLOPT_CONNECTTIMEOUT=>1,
+            CURLOPT_TIMEOUT=>3
+        ]);
         $curl->process();
     }
 

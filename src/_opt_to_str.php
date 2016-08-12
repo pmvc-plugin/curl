@@ -1,12 +1,12 @@
 <?php
 namespace PMVC\PlugIn\curl;
 
-${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\optToStr';
+${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\OPT_TO_STR';
 
 /**
  * @see https://gist.github.com/blainesch/4626922
  */
-class optToStr
+class OPT_TO_STR
 {
     private $_keys = [
         CURLOPT_VERBOSE=>'VERBOSE',
@@ -16,7 +16,8 @@ class optToStr
         CURLOPT_CONNECTTIMEOUT=>'CONNECTTIMEOUT',
         CURLOPT_SSL_VERIFYHOST=>'SSL_VERIFYHOST',
         CURLOPT_RETURNTRANSFER=>'RETURNTRANSFER',
-        CURLOPT_URL=>'URL'
+        CURLOPT_URL=>'URL',
+        CURLOPT_USERAGENT=>'USERAGENT'
     ];
     
     function __invoke()

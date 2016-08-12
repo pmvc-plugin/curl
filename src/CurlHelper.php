@@ -72,6 +72,7 @@ class CurlHelper implements CurlInterface
             ,CURLOPT_FOLLOWLOCATION => true
             ,CURLOPT_SSL_VERIFYHOST => false
             ,CURLOPT_SSL_VERIFYPEER => false
+            ,CURLOPT_FAILONERROR=>true
         ];
     }
 
@@ -129,7 +130,7 @@ class CurlHelper implements CurlInterface
             curl_setopt_array($this->_oCurl, $this->_opts);
             \PMVC\dev(function(){
                 return \PMVC\plug('curl')
-                    ->optToStr()
+                    ->opt_to_str()
                     ->all($this->_opts);
             },'req');
             $this->setManualFollow();
