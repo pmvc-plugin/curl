@@ -51,11 +51,18 @@ class CurlResponder
             return;
         }
         $this->rawHeader = substr($return, 0, $header_size);
-        $this->header = $this->getHeaders($this->rawHeader);
+        $header = $this->getHeaders($this->rawHeader);
+        if (isset($header['multi'])) {
+            $this->multiHeader = $header['multi'];
+            $this->header = $header['multi'][(count($header['multi'])-1)];
+        } else {
+            $this->header = $header;
+        }
         if ($curlHelper->manualFollow
             && isset($this->header['location'])
         ) {
             $curlHelper->setOptions($this->header['location'], null, function($r){
+                $this->header = $r->header;
                 $this->body = $r->body;
             });
             $curlHelper->process(); 
@@ -107,7 +114,7 @@ class CurlResponder
         }
         if (!empty($multi)) {
             $multi[] = $headerdata;
-            return $multi;
+            return ['multi'=>$multi];
         } else {
             return $headerdata;
         }

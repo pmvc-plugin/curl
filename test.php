@@ -9,6 +9,11 @@ class CurlTest extends PHPUnit_Framework_TestCase
 {
     private $_plug='curl';
 
+    function setup()
+    {
+        \PMVC\initPlugin(['curl'=>null],true);
+    }
+
     function testGet()
     {
         $body = [];

@@ -82,13 +82,13 @@ class CurlHelper implements CurlInterface
     public function setManualFollow()
     {
         $isNotGet = ( 
-            ( !empty($this->_opts[CURLOPT_CUSTOMREQUEST])            
-              && 'GET' !== $this->_opts[CURLOPT_CUSTOMREQUEST] 
-            )
-            || !empty($this->_opts[CURLOPT_POST]) 
+            ( !empty($this->_opts[CURLOPT_CUSTOMREQUEST]) && 
+              'GET' !== $this->_opts[CURLOPT_CUSTOMREQUEST] 
+            ) ||
+            !empty($this->_opts[CURLOPT_POST])
         );
-        if ( $isNotGet
-            && !empty($this->_opts[CURLOPT_FOLLOWLOCATION])
+        if ( $isNotGet &&
+            !empty($this->_opts[CURLOPT_FOLLOWLOCATION])
         ) {
             $this->set([CURLOPT_FOLLOWLOCATION=>false]);
             $this->manualFollow = true;
@@ -109,7 +109,10 @@ class CurlHelper implements CurlInterface
         $return = call_user_func($func,$oCurl);
         $r = new CurlResponder($return, $this, $more);
         \PMVC\dev(function() use($r) {
-            return $r;
+            return [
+                $this->_opts,
+                $r
+            ];
         },'curl');
         if (is_callable($this->_function)) {
             call_user_func($this->_function, $r, $this);
