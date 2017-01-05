@@ -18,7 +18,9 @@ class OPT_TO_STR
         CURLOPT_RETURNTRANSFER=>'RETURNTRANSFER',
         CURLOPT_URL=>'URL',
         CURLOPT_USERAGENT=>'USERAGENT',
-        CURLOPT_FAILONERROR=>'FAILONERROR'
+        CURLOPT_FAILONERROR=>'FAILONERROR',
+        CURLOPT_POST=>'POST',
+        CURLOPT_POSTFIELDS=>'POSTFIELDS'
     ];
     
     function __invoke()
@@ -30,15 +32,29 @@ class OPT_TO_STR
     {
         $return = [];
         foreach($opts as $k=>$v){
-            $return[$this->one($k)] = $v;
+            $return[$this->one($k, new \PMVC\Object($v))] = $v;
         }
         return $return;
     }
 
-    function one($k)
+    function postfields($v)
     {
-        if (isset($this->_keys[$k])) {
-            return $this->_keys[$k];
+        return \PMVC\plug('underscore')
+            ->query()
+            ->parse_str($v);
+    }
+
+    function one($k, $v=null)
+    {
+        $key = \PMVC\value($this->_keys, [$k]);
+        if ($key) {
+            if (method_exists($this, $key)) {
+                if (!is_null($v)) {
+                    $v =& $v();
+                    $v = $this->$key($v);
+                }
+            }
+            return $key;
         } else {
             return $k;
         }
