@@ -72,7 +72,8 @@ class CurlHelper implements CurlInterface
             ,CURLOPT_FOLLOWLOCATION => true
             ,CURLOPT_SSL_VERIFYHOST => false
             ,CURLOPT_SSL_VERIFYPEER => false
-            ,CURLOPT_FAILONERROR=>true
+            // For get error body
+            ,CURLOPT_FAILONERROR    => false
         ];
     }
 
