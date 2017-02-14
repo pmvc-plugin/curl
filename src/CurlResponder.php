@@ -29,6 +29,11 @@ class CurlResponder
     public $body;
 
     /**
+     * @var Request url
+     */
+    public $url;
+
+    /**
      * @var http respone more information
      */
     public $more;
@@ -46,6 +51,7 @@ class CurlResponder
         $oCurl = $curlHelper->getInstance();
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
+        $this->url = curl_getinfo($oCurl, CURLINFO_EFFECTIVE_URL);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
         if (empty($header_size)) {
             return;
@@ -61,7 +67,8 @@ class CurlResponder
         if ($curlHelper->manualFollow
             && isset($this->header['location'])
         ) {
-            $curlHelper->setOptions($this->header['location'], null, function($r){
+            $this->url = $this->header['location'];
+            $curlHelper->setOptions($this->url, null, function($r){
                 $this->header = $r->header;
                 $this->body = $r->body;
             });
