@@ -28,43 +28,53 @@ class curl extends \PMVC\PlugIn
         return $oCurl;
     }
 
-    public function get($url=null, $function=null)
+    private function _getUrl($url, $querys)
     {
+        $url = \PMVC\plug('url')->getUrl($url);
+        $url->query->set($querys);
+        return $url;
+    }
+
+    public function get($url=null, $function=null, $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
         return $this->_add($url, $function, array());
     }
 
-    public function put($url=null, $function=null, $params=array())
+    public function put($url=null, $function=null, $querys=[])
     {
         $curl_opt = array(
             CURLOPT_CUSTOMREQUEST=>'PUT',
-            CURLOPT_POSTFIELDS=>http_build_query($params, '', '&')
+            CURLOPT_POSTFIELDS=>http_build_query($querys, '', '&')
         );
         return $this->_add($url, $function, $curl_opt);
     } 
 
-    public function post($url=null, $function=null, $params=array(), $useMultiPartFormData=false)
+    public function post($url=null, $function=null, $querys=[], $useMultiPartFormData=false)
     {
         if (!$useMultiPartFormData) {
             // for non-upload file case
-            $params = http_build_query($params, '', '&');
+            $querys = http_build_query($querys, '', '&');
         }
         $curl_opt = array(
             CURLOPT_POST=>true,
-            CURLOPT_POSTFIELDS=>$params
+            CURLOPT_POSTFIELDS=>$querys
         );
         return $this->_add($url, $function, $curl_opt);
     } 
 
-    public function delete($url=null, $function=null)
+    public function delete($url=null, $function=null, $querys=[])
     {
+        $url = $this->_getUrl($url, $querys);
         $curl_opt = array(
             CURLOPT_CUSTOMREQUEST=>'DELETE'
         );
         return $this->_add($url, $function, $curl_opt);
     }
 
-    public function options($url=null, $function=null)
+    public function options($url=null, $function=null, $querys=[])
     {
+        $url = $this->_getUrl($url, $querys);
         $curl_opt = array(
             CURLOPT_CUSTOMREQUEST=>'OPTIONS'
         );
