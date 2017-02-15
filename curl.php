@@ -98,6 +98,10 @@ class curl extends \PMVC\PlugIn
      */
     public function __destruct()
     {
+        $curls = $this->getCurls();
+        if (empty($curls) || !count($curls)) {
+            return;
+        }
         $this->process();
     }
 }
