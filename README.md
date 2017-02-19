@@ -7,6 +7,13 @@
 # PMVC Curl Plugin 
 ===============
 
+## if you want re-cook curl opiton, you need stringify url manually.
+```
+$curl = new CurlHelper();
+$options = $curl->set();
+$options[CURLOPT_URL] = (string)$options[CURLOPT_URL];
+```
+
 ## Install with Composer
 ### 1. Download composer
    * mkdir test_folder
