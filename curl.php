@@ -15,7 +15,7 @@ class curl extends \PMVC\PlugIn
         $this->setDefaultAlias(new MultiCurlHelper());
     }
 
-    private function _add($url, $function, $opts)
+    private function _add($url, $function, $opts, $ignore=null)
     {
         if (!empty($this['session'])) {
             $oCurl = $this['session'];
@@ -24,7 +24,9 @@ class curl extends \PMVC\PlugIn
             $oCurl = new CurlHelper();
         }
         $oCurl->setOptions($url, $function, $opts);
-        $this->add($oCurl);
+        if (!$ignore) {
+            $this->add($oCurl);
+        }
         return $oCurl;
     }
 
@@ -81,13 +83,21 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     }
 
+    public function handleCookie($url=null, $function=null, $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
+        $ocurl = $this->_add($url, $function, [], true);
+        $this['cookieHandler'] = $ocurl;
+        return $ocurl;
+    }
+
     public function getCookie(CurlResponder $responder)
     {
         return [
             CURLOPT_COOKIE=>
                 join(
                     ';',
-                    $responder->header['set-cookie']
+                    \PMVC\toArray($responder->header['set-cookie'])
                 )
         ];
     }
