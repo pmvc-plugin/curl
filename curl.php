@@ -37,35 +37,55 @@ class curl extends \PMVC\PlugIn
         return $url;
     }
 
-    public function get($url=null, $function=null, $querys=[])
+    public function get($url=null, $function=null, array $querys=[])
     {
         $url = $this->_getUrl($url, $querys);
         return $this->_add($url, $function, array());
     }
 
-    public function put($url=null, $function=null, $querys=[])
+    public function put($url=null, $function=null, array $querys=[], $json=false)
     {
-        $curl_opt = array(
-            CURLOPT_CUSTOMREQUEST=>'PUT',
-            CURLOPT_POSTFIELDS=>http_build_query($querys, '', '&')
-        );
-        return $this->_add($url, $function, $curl_opt);
-    } 
-
-    public function post($url=null, $function=null, $querys=[], $useMultiPartFormData=false)
-    {
-        if (!$useMultiPartFormData) {
-            // for non-upload file case
+        if (!$json) {
             $querys = http_build_query($querys, '', '&');
         }
         $curl_opt = array(
-            CURLOPT_POST=>true,
+            CURLOPT_CUSTOMREQUEST=>'PUT',
             CURLOPT_POSTFIELDS=>$querys
         );
+        if ($json) {
+            $this->_toJson($curl_opt);
+        }
         return $this->_add($url, $function, $curl_opt);
     } 
 
-    public function delete($url=null, $function=null, $querys=[])
+    public function post($url=null, $function=null, array $querys=[], $useMultiPartFormData=false, $json=false)
+    {
+        if (!$useMultiPartFormData) {
+            // for non-upload file case
+            if (!$json) {
+                $querys = http_build_query($querys, '', '&');
+            }
+        }
+        $curl_opt = [ 
+            CURLOPT_POST=>true,
+            CURLOPT_POSTFIELDS=>$querys,
+        ];
+        if ($json) {
+            $this->_toJson($curl_opt);
+        }
+        return $this->_add($url, $function, $curl_opt);
+    }
+
+    private function _toJson (&$opt)
+    {
+        $opt[CURLOPT_POSTFIELDS] = json_encode($opt[CURLOPT_POSTFIELDS]);
+        $opt[CURLOPT_HTTPHEADER] = [
+            'Content-Type: application/json',
+            'Content-Length: '.strlen($opt[CURLOPT_POSTFIELDS])
+        ];
+    }
+
+    public function delete($url=null, $function=null, array $querys=[])
     {
         $url = $this->_getUrl($url, $querys);
         $curl_opt = array(
@@ -74,7 +94,7 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     }
 
-    public function options($url=null, $function=null, $querys=[])
+    public function options($url=null, $function=null, array $querys=[])
     {
         $url = $this->_getUrl($url, $querys);
         $curl_opt = array(
@@ -83,7 +103,7 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     }
 
-    public function handleCookie($url=null, $function=null, $querys=[])
+    public function handleCookie($url=null, $function=null, array $querys=[])
     {
         $url = $this->_getUrl($url, $querys);
         $ocurl = $this->_add($url, $function, [], true);

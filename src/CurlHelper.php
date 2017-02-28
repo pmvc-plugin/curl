@@ -53,6 +53,14 @@ class CurlHelper implements CurlInterface
     {
         //assing custom options
         if (is_array($options)) {
+            if (isset($options[CURLOPT_HTTPHEADER])) {
+                $this->_opts[CURLOPT_HTTPHEADER] = 
+                    array_merge(
+                        \PMVC\get($this->_opts, CURLOPT_HTTPHEADER, []),
+                        $options[CURLOPT_HTTPHEADER]
+                    );
+                unset($options[CURLOPT_HTTPHEADER]);
+            }
             foreach ($options as $k=>$v) {
                 $this->_opts[$k] = $v;
             }

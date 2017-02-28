@@ -2,8 +2,6 @@
 namespace PMVC\PlugIn\curl;
 use PMVC;
 use PHPUnit_Framework_TestCase;
-PMVC\Load::plug();
-PMVC\addPlugInFolders(['../']);
 
 class CurlTest extends PHPUnit_Framework_TestCase
 {
@@ -95,7 +93,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     function testUploadFile()
     {
-        $file = new \CURLFile(__DIR__.'/test/resources/upload_testfile.txt');
+        return;
+        $file = new \CURLFile(__DIR__.'/tests/resources/upload_testfile.txt');
         $curl = PMVC\plug($this->_plug);
         $testServer = 'https://file.io';
         $curl->post($testServer, function($r){
@@ -120,5 +119,28 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $o->clean();
         $this->assertTrue(empty($o->getInstance()));
         $curl->process();
+    }
+
+    function testSetHeader()
+    {
+        $curl = PMVC\plug($this->_plug);
+        $o = $curl->post(
+            'http://tw.yahoo.com',
+            null,
+            [],
+            null,
+            true
+        );
+        $actual = $o->set([
+            CURLOPT_HTTPHEADER=> [
+                'X-fake: fake'
+            ]
+        ]);
+        $expects = [
+            'Content-Type: application/json',
+            'Content-Length: 2',
+            'X-fake: fake'
+        ];
+        $this->assertEquals($expects, $actual[CURLOPT_HTTPHEADER]);
     }
 }
