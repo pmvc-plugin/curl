@@ -1,7 +1,11 @@
 <?php
 namespace PMVC\PlugIn\curl;
 
+use PMVC\PlugIn\url\Query;
+
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\OPT_TO_STR';
+
+\PMVC\initPlugin(['url'=>null], true);
 
 /**
  * @see https://gist.github.com/blainesch/4626922
@@ -39,9 +43,7 @@ class OPT_TO_STR
 
     function postfields($v)
     {
-        return \PMVC\plug('underscore')
-            ->query()
-            ->parse_str($v);
+        return Query::parse_str($v);
     }
 
     function one($k, $v=null)
