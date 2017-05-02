@@ -76,8 +76,6 @@ class MultiCurlHelper
             $oCurl = $obj->getInstance();
             if (!empty($oCurl)) {
                 $executePool->attach($obj);
-            } else { 
-                $curlPool->detach($obj);
             }
             $i++;
             if ($i>=$max) {

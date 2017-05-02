@@ -2,6 +2,7 @@
 namespace PMVC\PlugIn\curl;
 use PMVC;
 use PHPUnit_Framework_TestCase;
+use CURLFILE;
 
 class CurlTest extends PHPUnit_Framework_TestCase
 {
@@ -93,8 +94,8 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
     function testUploadFile()
     {
-        return;
-        $file = new \CURLFile(__DIR__.'/tests/resources/upload_testfile.txt');
+        $filePath = __DIR__.'/resources/upload_testfile.txt';
+        $file = new CURLFile($filePath);
         $curl = PMVC\plug($this->_plug);
         $testServer = 'https://file.io';
         $curl->post($testServer, function($r){
@@ -142,5 +143,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
             'X-fake: fake'
         ];
         $this->assertEquals($expects, $actual[CURLOPT_HTTPHEADER]);
+    }
+
+    function testShouldOnlyGetOnce()
+    {
+        $curl = PMVC\plug($this->_plug);
+        $i = 0;
+        $callback = function() use(&$i){
+            $i++;
+        };
+        $curl->get('https://google.com', $callback);
+        $tw = $curl->get('https://google.com.tw', $callback);
+        $tw->clean();
+        $curl->process();
+        $this->assertEquals(1, $i);
     }
 }
