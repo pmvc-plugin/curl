@@ -128,7 +128,9 @@ class CurlHelper implements CurlInterface
             ];
         },'curl');
         if (is_callable($this->_function)) {
-            call_user_func($this->_function, $r, $this);
+            $options = $this->set();
+            $options['this'] = $this;
+            call_user_func($this->_function, $r, $options);
         }
         $this->clean();
         return true;
