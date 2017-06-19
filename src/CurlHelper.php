@@ -128,9 +128,7 @@ class CurlHelper implements CurlInterface
             ];
         },'curl');
         if (is_callable($this->_function)) {
-            $options = $this->set();
-            $options['this'] = $this;
-            call_user_func($this->_function, $r, $options);
+            call_user_func($this->_function, $r, $this);
         }
         $this->clean();
         return true;
@@ -155,6 +153,12 @@ class CurlHelper implements CurlInterface
             $this->setManualFollow();
         }
         return $this->_oCurl;
+    }
+
+    public function setCallback($cb)
+    {
+        $this->_function = $cb;
+        return $this;
     }
 
     /**
