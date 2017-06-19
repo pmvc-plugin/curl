@@ -4,15 +4,8 @@
 [![License](https://poser.pugx.org/pmvc-plugin/curl/license)](https://packagist.org/packages/pmvc-plugin/curl)
 [![Total Downloads](https://poser.pugx.org/pmvc-plugin/curl/downloads)](https://packagist.org/packages/pmvc-plugin/curl) 
 
-# PMVC Curl Plugin 
-===============
-
-## if you want re-cook curl opiton, you need stringify url manually.
-```
-$curl = new CurlHelper();
-$options = $curl->set();
-$options[CURLOPT_URL] = (string)$options[CURLOPT_URL];
-```
+PMVC Curl Plugin 
+===
 
 ## Install with Composer
 ### 1. Download composer
