@@ -98,15 +98,20 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $file = new CURLFile($filePath);
         $curl = PMVC\plug($this->_plug);
         $testServer = 'https://file.io';
-        $curl->post($testServer, function($r){
-            if (200!==$r->code) {
-                return !trigger_error(print_r($r,true));
-            }
-            $body = \PMVC\fromJson($r->body); 
-            $this->assertEquals('https://file.io/'.$body->key, $body->link);
-            $this->assertEquals('14 days', $body->expiry);
-            $this->assertTrue($body->success);
-        }, ['file'=>$file], true)->set([
+        $curl->post(
+            $testServer,
+            function($r){
+                if (200!==$r->code) {
+                    return !trigger_error(print_r($r,true));
+                }
+                $body = \PMVC\fromJson($r->body); 
+                $this->assertEquals('https://file.io/'.$body->key, $body->link);
+                $this->assertEquals('14 days', $body->expiry);
+                $this->assertTrue($body->success);
+            },
+            ['file'=>$file],
+            true
+        )->set([
             CURLOPT_CONNECTTIMEOUT=>1,
             CURLOPT_TIMEOUT=>3
         ]);

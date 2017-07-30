@@ -58,6 +58,13 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     } 
 
+    /**
+     * @params string   $url                  Request Url
+     * @params callable $function             Respond callback function
+     * @params array    $querys               Parameters
+     * @params bool     $useMultiPartFormData If Upload file set this to true
+     * @params bool     $json                 Use json format
+     */
     public function post($url=null, $function=null, array $querys=[], $useMultiPartFormData=false, $json=false)
     {
         if (!$useMultiPartFormData) {
