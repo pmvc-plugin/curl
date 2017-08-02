@@ -89,6 +89,7 @@ class CurlResponder
                 $this->more[$key] = $info;
             }
         }
+        $this->url = \PMVC\plug('url')->getUrl($this->url);
     }
 
     /**
