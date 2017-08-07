@@ -44,7 +44,11 @@ class CurlResponder
     public $errno;
 
     /**
-     * construct
+     * Construct
+     * 
+     * !!Keep in mind!!
+     * Need make data simple for json_encode and json_decode.
+     * We should not use any object in attribute.
      */
     public function __construct($return, $curlHelper, $more=[])
     {
@@ -89,7 +93,6 @@ class CurlResponder
                 $this->more[$key] = $info;
             }
         }
-        $this->url = \PMVC\plug('url')->getUrl($this->url);
     }
 
     /**
