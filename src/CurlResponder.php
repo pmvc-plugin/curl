@@ -80,7 +80,10 @@ class CurlResponder
         } elseif (!empty($this->header['content-encoding']) 
             && 'gzip' === $this->header['content-encoding']
         ) {
-            $this->body = gzinflate(substr($return, $header_size+10, -8));
+            $encodeBody = substr($return, $header_size+10, -8);
+            if ($encodeBody) {
+                $this->body = gzinflate($encodeBody);
+            }
         } else {
             $this->body = substr($return, $header_size);
         }
@@ -90,7 +93,9 @@ class CurlResponder
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
                 $info[0] = \PMVC\get($infos, $key, function() use($oCurl, $key){
-                    return curl_getinfo($oCurl, $key);
+                    if (is_numeric($key)) {
+                        return curl_getinfo($oCurl, $key);
+                    }
                 });
                 if ('request_header' === $key) {
                     $info[0] = [
