@@ -86,9 +86,18 @@ class CurlResponder
         }
         if (!empty($more)) {
             $pCurl = \PMVC\plug('curl');
+            $infos = curl_getinfo($oCurl);
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
-                $info[0] = curl_getinfo($oCurl, $key);
+                $info[0] = \PMVC\get($infos, $key, function() use($oCurl, $key){
+                    return curl_getinfo($oCurl, $key);
+                });
+                if ('request_header' === $key) {
+                    $info[0] = [
+                        'raw'=>$info[0],
+                        'data'=>$this->getHeaders($info[0])
+                    ];
+                }
                 $info[1] = $pCurl->info_to_str()->one($key);
                 $this->more[$key] = $info;
             }
