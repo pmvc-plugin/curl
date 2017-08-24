@@ -1,5 +1,8 @@
 <?php
+
 namespace PMVC\PlugIn\curl;
+
+use PMVC\HashMap;
 
 \PMVC\l(__DIR__.'/src/CurlInterface.php');
 \PMVC\l(__DIR__.'/src/CurlHelper.php');
@@ -112,9 +115,12 @@ class curl extends \PMVC\PlugIn
 
     public function handleCookie($url=null, $function=null, array $querys=[])
     {
+        if (!isset($this['cookieHandler'])) {
+            $this['cookieHandler'] = new HashMap();
+        }
         $url = $this->_getUrl($url, $querys);
         $ocurl = $this->_add($url, $function, [], true);
-        $this['cookieHandler'] = $ocurl;
+        $this['cookieHandler'][] = $ocurl;
         return $ocurl;
     }
 
