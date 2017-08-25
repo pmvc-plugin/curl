@@ -87,9 +87,13 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
+        \PMVC\dev(function() use (&$more){
+            $more[]= 'request_header';
+        }, 'req');
         if (!empty($more)) {
             $pCurl = \PMVC\plug('curl');
             $infos = curl_getinfo($oCurl);
+            $more = array_unique($more);
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
                 $info[0] = \PMVC\get($infos, $key, function() use($oCurl, $key){

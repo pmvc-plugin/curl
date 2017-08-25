@@ -42,6 +42,9 @@ class CurlHelper implements CurlInterface
     ) {
         $this->_opts = $this->getDefaultOptions();
         // keep consistency when somewhere get url 
+        \PMVC\dev(function() use (&$options){
+            $options[CURLINFO_HEADER_OUT] = 1;
+        }, 'req');
         $options[CURLOPT_URL]=(string)$url;
         $this->_function = $function;
         return $this->set($options);
@@ -145,11 +148,15 @@ class CurlHelper implements CurlInterface
         if (is_null($this->_oCurl)) {
             $this->_oCurl = curl_init();
             curl_setopt_array($this->_oCurl, $this->_opts);
-            \PMVC\dev(function(){
+            \PMVC\dev(
+            /**
+             * @help Curl request information
+             */
+            function(){
                 return \PMVC\plug('curl')
                     ->opt_to_str()
                     ->all($this->_opts);
-            },'req');
+            }, 'req');
             $this->setManualFollow();
         }
         return $this->_oCurl;
