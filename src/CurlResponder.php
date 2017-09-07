@@ -87,9 +87,23 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
-        \PMVC\dev(function() use (&$more){
-            $more[]= 'request_header';
-        }, 'req');
+        \PMVC\dev(function() use (&$more) {
+            $more = array_merge(
+                $more,
+                [
+                    'filetime',
+                    'total_time',
+                    'namelookup_time',
+                    'connect_time',
+                    'pretransfer_time',
+                    'starttransfer_time',
+                    'redirect_time'
+                ]
+            );
+            \PMVC\dev(function() use (&$more) {
+                $more[]= 'request_header';
+            }, 'req');
+        }, 'curl');
         if (!empty($more)) {
             $pCurl = \PMVC\plug('curl');
             $infos = curl_getinfo($oCurl);
