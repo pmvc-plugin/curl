@@ -193,6 +193,7 @@ class CurlHelper implements CurlInterface
             curl_close($this->_oCurl);
         }
         $this->_oCurl = null;
+        $this->_function = null;
         $this->_opts = [];
     }
 
