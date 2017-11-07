@@ -73,6 +73,16 @@ class CurlHelper implements CurlInterface
     }
 
     /**
+     * Get hash
+     */
+     public function getHash()
+     {
+        $options = $this->set();
+        unset($options[CURLINFO_HEADER_OUT]);
+        return \PMVC\hash($options);
+     }
+
+    /**
      * Get default options
      */
     public function getDefaultOptions()
