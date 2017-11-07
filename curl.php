@@ -40,52 +40,6 @@ class curl extends \PMVC\PlugIn
         return $url;
     }
 
-    public function get($url=null, $function=null, array $querys=[])
-    {
-        $url = $this->_getUrl($url, $querys);
-        return $this->_add($url, $function, array());
-    }
-
-    public function put($url=null, $function=null, array $querys=[], $json=false)
-    {
-        if (!$json) {
-            $querys = http_build_query($querys, '', '&');
-        }
-        $curl_opt = array(
-            CURLOPT_CUSTOMREQUEST=>'PUT',
-            CURLOPT_POSTFIELDS=>$querys
-        );
-        if ($json) {
-            $this->_toJson($curl_opt);
-        }
-        return $this->_add($url, $function, $curl_opt);
-    } 
-
-    /**
-     * @params string   $url                  Request Url
-     * @params callable $function             Respond callback function
-     * @params array    $querys               Parameters
-     * @params bool     $useMultiPartFormData If Upload file set this to true
-     * @params bool     $json                 Use json format
-     */
-    public function post($url=null, $function=null, array $querys=[], $useMultiPartFormData=false, $json=false)
-    {
-        if (!$useMultiPartFormData) {
-            // for non-upload file case
-            if (!$json) {
-                $querys = http_build_query($querys, '', '&');
-            }
-        }
-        $curl_opt = [ 
-            CURLOPT_POST=>true,
-            CURLOPT_POSTFIELDS=>$querys,
-        ];
-        if ($json) {
-            $this->_toJson($curl_opt);
-        }
-        return $this->_add($url, $function, $curl_opt);
-    }
-
     private function _toJson (&$opt)
     {
         $opt[CURLOPT_POSTFIELDS] = json_encode($opt[CURLOPT_POSTFIELDS]);
@@ -93,24 +47,6 @@ class curl extends \PMVC\PlugIn
             'Content-Type: application/json',
             'Content-Length: '.strlen($opt[CURLOPT_POSTFIELDS])
         ];
-    }
-
-    public function delete($url=null, $function=null, array $querys=[])
-    {
-        $url = $this->_getUrl($url, $querys);
-        $curl_opt = array(
-            CURLOPT_CUSTOMREQUEST=>'DELETE'
-        );
-        return $this->_add($url, $function, $curl_opt);
-    }
-
-    public function options($url=null, $function=null, array $querys=[])
-    {
-        $url = $this->_getUrl($url, $querys);
-        $curl_opt = array(
-            CURLOPT_CUSTOMREQUEST=>'OPTIONS'
-        );
-        return $this->_add($url, $function, $curl_opt);
     }
 
     public function handleCookie($url=null, $function=null, array $querys=[])
@@ -147,4 +83,68 @@ class curl extends \PMVC\PlugIn
         }
         $this->process();
     }
+
+    public function delete($url=null, $function=null, array $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'DELETE'
+        );
+        return $this->_add($url, $function, $curl_opt);
+    }
+
+    public function get($url=null, $function=null, array $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
+        return $this->_add($url, $function, array());
+    }
+
+    public function options($url=null, $function=null, array $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'OPTIONS'
+        );
+        return $this->_add($url, $function, $curl_opt);
+    }
+
+    /**
+     * @params string   $url                  Request Url
+     * @params callable $function             Respond callback function
+     * @params array    $querys               Parameters
+     * @params bool     $useMultiPartFormData If Upload file set this to true
+     * @params bool     $json                 Use json format
+     */
+    public function post($url=null, $function=null, array $querys=[], $useMultiPartFormData=false, $json=false)
+    {
+        if (!$useMultiPartFormData) {
+            // for non-upload file case
+            if (!$json) {
+                $querys = http_build_query($querys, '', '&');
+            }
+        }
+        $curl_opt = [ 
+            CURLOPT_POST=>true,
+            CURLOPT_POSTFIELDS=>$querys,
+        ];
+        if ($json) {
+            $this->_toJson($curl_opt);
+        }
+        return $this->_add($url, $function, $curl_opt);
+    }
+
+    public function put($url=null, $function=null, array $querys=[], $json=false)
+    {
+        if (!$json) {
+            $querys = http_build_query($querys, '', '&');
+        }
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'PUT',
+            CURLOPT_POSTFIELDS=>$querys
+        );
+        if ($json) {
+            $this->_toJson($curl_opt);
+        }
+        return $this->_add($url, $function, $curl_opt);
+    } 
 }
