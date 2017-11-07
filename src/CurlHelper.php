@@ -41,11 +41,13 @@ class CurlHelper implements CurlInterface
         array $options=[]
     ) {
         $this->_opts = $this->getDefaultOptions();
-        // keep consistency when somewhere get url 
         \PMVC\dev(function() use (&$options){
             $options[CURLINFO_HEADER_OUT] = 1;
         }, 'req');
+
+        // keep consistency when somewhere get url
         $options[CURLOPT_URL]=(string)$url;
+
         $this->_function = $function;
         return $this->set($options);
     }
@@ -170,12 +172,6 @@ class CurlHelper implements CurlInterface
         return $this->_oCurl;
     }
 
-    public function setCallback($cb)
-    {
-        $this->_function = $cb;
-        return $this;
-    }
-
     /**
      * @return callback
      */
@@ -183,6 +179,15 @@ class CurlHelper implements CurlInterface
      {
         return $this->_function;
      }
+
+    /**
+     * use in minions:cache
+     */
+    public function setCallback($cb)
+    {
+        $this->_function = $cb;
+        return $this;
+    }
 
     /**
      * Reset  curl resource
