@@ -87,17 +87,27 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
+        $this->handleMore($oCurl, $more);
+    }
+
+    public function handleMore($oCurl, $more)
+    {
+        $infoToStr = \PMVC\plug('curl')->info_to_str();
+        $infos = $infoToStr->flip(curl_getinfo($oCurl));
+        if (true === \PMVC\get($more,0)) {
+            $more = array_keys($infos);
+        }
         \PMVC\dev(function() use (&$more) {
             $more = array_merge(
                 $more,
                 [
-                    'filetime',
-                    'total_time',
-                    'namelookup_time',
-                    'connect_time',
-                    'pretransfer_time',
-                    'starttransfer_time',
-                    'redirect_time'
+                    CURLINFO_FILETIME,
+                    CURLINFO_TOTAL_TIME,
+                    CURLINFO_NAMELOOKUP_TIME,
+                    CURLINFO_CONNECT_TIME,
+                    CURLINFO_PRETRANSFER_TIME,
+                    CURLINFO_STARTTRANSFER_TIME,
+                    CURLINFO_REDIRECT_TIME
                 ]
             );
             \PMVC\dev(function() use (&$more) {
@@ -105,8 +115,6 @@ class CurlResponder
             }, 'req');
         }, 'curl');
         if (!empty($more)) {
-            $pCurl = \PMVC\plug('curl');
-            $infos = curl_getinfo($oCurl);
             $more = array_unique($more);
             foreach ($more as $key) {
                 $info = new SplFixedArray(2);
@@ -121,7 +129,7 @@ class CurlResponder
                         'data'=>$this->getHeaders($info[0])
                     ];
                 }
-                $info[1] = $pCurl->info_to_str()->one($key);
+                $info[1] = $infoToStr->one($key);
                 $this->more[$key] = $info;
             }
         }

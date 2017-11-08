@@ -68,7 +68,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $name = array(
             CURLINFO_EFFECTIVE_URL=>$plug->info_to_str()->one(CURLINFO_EFFECTIVE_URL),
         );
-        $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'EFFECTIVE_URL');
+        $this->assertEquals($name[CURLINFO_EFFECTIVE_URL],'url');
     }
 
     function testParseMultiHeader()

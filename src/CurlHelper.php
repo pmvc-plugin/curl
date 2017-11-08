@@ -74,6 +74,14 @@ class CurlHelper implements CurlInterface
         return $this->_opts;
     }
 
+    public function resetOptions($options = null)
+    {
+        $this->_opts = [];
+        if (is_array($options)) {
+            return $this->set($options); 
+        }
+    }
+
     /**
      * Get hash
      */
@@ -181,15 +189,6 @@ class CurlHelper implements CurlInterface
      }
 
     /**
-     * use in minions:cache
-     */
-    public function setCallback($cb)
-    {
-        $this->_function = $cb;
-        return $this;
-    }
-
-    /**
      * Reset  curl resource
      */
     public function clean()
@@ -199,8 +198,9 @@ class CurlHelper implements CurlInterface
         }
         $this->_oCurl = null;
         $this->_function = null;
-        $this->_opts = [];
+        $this->resetOptions();
     }
+
 
     public function __destruct()
     {

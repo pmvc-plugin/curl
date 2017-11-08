@@ -6,28 +6,34 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\info_to_str';
 class info_to_str
 {
     private $_keys = [
-        CURLINFO_EFFECTIVE_URL=>'EFFECTIVE_URL',
-        CURLINFO_HTTP_CODE=>'HTTP_CODE',
-        CURLINFO_FILETIME=>'FILETIME',
-        CURLINFO_TOTAL_TIME=>'TOTAL_TIME',
-        CURLINFO_NAMELOOKUP_TIME=>'NAMELOOKUP_TIME',
-        CURLINFO_CONNECT_TIME=>'CONNECT_TIME',
-        CURLINFO_PRETRANSFER_TIME=>'PRETRANSFER_TIME',
-        CURLINFO_STARTTRANSFER_TIME=>'STARTTRANSFER_TIME',
-        CURLINFO_REDIRECT_COUNT=>'REDIRECT_COUNT',
-        CURLINFO_REDIRECT_TIME=>'REDIRECT_TIME',
-        CURLINFO_SIZE_UPLOAD=>'SIZE_UPLOAD',
-        CURLINFO_SIZE_DOWNLOAD=>'SIZE_DOWNLOAD',
-        CURLINFO_SPEED_DOWNLOAD=>'SPEED_DOWNLOAD',
-        CURLINFO_SPEED_UPLOAD=>'SPEED_UPLOAD',
-        CURLINFO_HEADER_SIZE=>'HEADER_SIZE',
-        CURLINFO_HEADER_OUT=>'HEADER_OUT',
-        CURLINFO_REQUEST_SIZE=>'REQUEST_SIZE',
-        CURLINFO_SSL_VERIFYRESULT=>'SSL_VERIFYRESULT',
-        CURLINFO_CONTENT_LENGTH_DOWNLOAD=>'CONTENT_LENGTH_DOWNLOAD',
-        CURLINFO_CONTENT_LENGTH_UPLOAD=>'CONTENT_LENGTH_UPLOAD',
-        CURLINFO_CONTENT_TYPE=>'CONTENT_TYPE',
-        CURLINFO_PRIVATE=>'PRIVATE'
+        CURLINFO_EFFECTIVE_URL=>'url',
+        CURLINFO_CONTENT_TYPE=>'content_type',
+        CURLINFO_HTTP_CODE=>'http_code',
+        CURLINFO_HEADER_SIZE=>'header_size',
+        CURLINFO_REQUEST_SIZE=>'request_size',
+        CURLINFO_FILETIME=>'filetime',
+        CURLINFO_SSL_VERIFYRESULT=>'ssl_verify_result',
+        CURLINFO_REDIRECT_COUNT=>'redirect_count',
+        CURLINFO_TOTAL_TIME=>'total_time',
+        CURLINFO_NAMELOOKUP_TIME=>'namelookup_time',
+        CURLINFO_CONNECT_TIME=>'connect_time',
+        CURLINFO_PRETRANSFER_TIME=>'pretransfer_time',
+        CURLINFO_SIZE_UPLOAD=>'size_upload',
+        CURLINFO_SIZE_DOWNLOAD=>'size_download',
+        CURLINFO_SPEED_DOWNLOAD=>'speed_download',
+        CURLINFO_SPEED_UPLOAD=>'speed_upload',
+        CURLINFO_CONTENT_LENGTH_DOWNLOAD=>'download_content_length',
+        CURLINFO_CONTENT_LENGTH_UPLOAD=>'upload_content_length',
+        CURLINFO_STARTTRANSFER_TIME=>'starttransfer_time',
+        CURLINFO_REDIRECT_TIME=>'redirect_time',
+        CURLINFO_REDIRECT_URL=>'redirect_url',
+        CURLINFO_PRIMARY_IP=>'primary_ip',
+        CURLINFO_CERTINFO=>'certinfo',
+        CURLINFO_PRIMARY_PORT=>'primary_port',
+        CURLINFO_LOCAL_IP=>'local_ip',
+        CURLINFO_LOCAL_PORT=>'local_port',
+        CURLINFO_HEADER_OUT=>'header_out',
+        CURLINFO_PRIVATE=>'private'
     ];
 
     function __invoke()
@@ -35,19 +41,23 @@ class info_to_str
         return $this;
     }
 
-    function all(array $infos)
+    function flip(array $infos)
     {
         $return = [];
+        $flip = array_flip($this->_keys);
         foreach($infos as $k=>$v){
-            $return[$this->one($k)] = $v;
+            $return[$this->one($k, $flip)] = $v;
         }
         return $return;
     }
 
-    function one($k)
+    function one($k, $to = null)
     {
-        if (isset($this->_keys[$k])) {
-            return $this->_keys[$k];
+        if (is_null($to)) {
+            $to = $this->_keys;
+        }
+        if (isset($to[$k])) {
+            return $to[$k];
         } else {
             return $k;
         }
