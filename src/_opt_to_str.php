@@ -2,6 +2,7 @@
 namespace PMVC\PlugIn\curl;
 
 use PMVC\PlugIn\url\Query;
+use PMVC\BaseObject;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\OPT_TO_STR';
 
@@ -42,7 +43,7 @@ class OPT_TO_STR
     {
         $return = [];
         foreach($opts as $k=>$v){
-            $return[$this->one($k, new \PMVC\Object($v))] = $v;
+            $return[$this->one($k, new BaseObject($v))] = $v;
         }
         return $return;
     }
