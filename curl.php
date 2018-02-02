@@ -35,8 +35,10 @@ class curl extends \PMVC\PlugIn
 
     private function _getUrl($url, $querys)
     {
-        $url = \PMVC\plug('url')->getUrl($url);
-        $url->query->set($querys);
+        if (!empty($querys)) {
+            $url = \PMVC\plug('url')->getUrl($url);
+            $url->query->set($querys);
+        }
         return $url;
     }
 
