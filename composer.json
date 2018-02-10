@@ -12,6 +12,7 @@
         }
     ],
     "require": {
+        "ext-mbstring": "*",
         "pmvc/pmvc": "*",
         "pmvc-plugin/url": "*"
     },

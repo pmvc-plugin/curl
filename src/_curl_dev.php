@@ -8,6 +8,7 @@ class CurlDev
 {
     public function __invoke($r, $opts)
     {
+        $rinfo = (array)$r;
         $options = $this->
             caller->
             opt_to_str()->
@@ -16,11 +17,14 @@ class CurlDev
             getUrl($opts[CURLOPT_URL]);
         $arrUrl = \PMVC\get($url);
         $arrUrl['query'] = \PMVC\get($url->query);
+        if (!mb_detect_encoding($rinfo['body'],'utf-8',true)) {
+            $rinfo['body'] = utf8_encode($rinfo['body']);
+        }
         return [
             'option' => $options, 
             'url'    => $arrUrl,
-            'respond'=> $r,
-            'body'   => \PMVC\fromJson($r->body)
+            'respond'=> $rinfo,
+            'body'   => \PMVC\fromJson($rinfo['body'])
         ];
     }
 }
