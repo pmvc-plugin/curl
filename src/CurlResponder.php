@@ -98,17 +98,15 @@ class CurlResponder
             $more = array_keys($infos);
         }
         \PMVC\dev(function() use (&$more) {
-            $more = array_merge(
+            array_push(
                 $more,
-                [
-                    CURLINFO_FILETIME,
-                    CURLINFO_TOTAL_TIME,
-                    CURLINFO_NAMELOOKUP_TIME,
-                    CURLINFO_CONNECT_TIME,
-                    CURLINFO_PRETRANSFER_TIME,
-                    CURLINFO_STARTTRANSFER_TIME,
-                    CURLINFO_REDIRECT_TIME
-                ]
+                CURLINFO_FILETIME,
+                CURLINFO_TOTAL_TIME,
+                CURLINFO_NAMELOOKUP_TIME,
+                CURLINFO_CONNECT_TIME,
+                CURLINFO_PRETRANSFER_TIME,
+                CURLINFO_STARTTRANSFER_TIME,
+                CURLINFO_REDIRECT_TIME
             );
             \PMVC\dev(function() use (&$more) {
                 $more[]= 'request_header';
