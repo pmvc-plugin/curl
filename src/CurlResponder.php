@@ -56,6 +56,7 @@ class CurlResponder
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
         $this->url = curl_getinfo($oCurl, CURLINFO_EFFECTIVE_URL);
+        $this->handleMore($oCurl, $more);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
         if (empty($header_size)) {
             return;
@@ -87,7 +88,6 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
-        $this->handleMore($oCurl, $more);
     }
 
     public function handleMore($oCurl, $more)
