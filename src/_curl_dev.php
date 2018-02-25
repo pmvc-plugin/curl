@@ -20,11 +20,19 @@ class CurlDev
         if (!mb_detect_encoding($rinfo['body'],'utf-8',true)) {
             $rinfo['body'] = utf8_encode($rinfo['body']);
         }
-        return [
+        $return = [
             'option' => $options, 
             'url'    => $arrUrl,
             'respond'=> $rinfo,
-            'body'   => \PMVC\fromJson($rinfo['body'])
+            'body'   => \PMVC\fromJson($rinfo['body']),
         ];
+        \PMVC\dev(
+        /**
+         * @help Get curl trace info.
+         */
+        function() use (&$return) {
+            $return['where'] = \PMVC\plug('debug')->parseTrace(debug_backtrace(), 14); 
+        }, 'curl-where');
+        return $return;
     }
 }
