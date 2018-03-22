@@ -106,6 +106,8 @@ class CurlHelper implements CurlInterface
             ,CURLOPT_SSL_VERIFYPEER => false
             // For get error body
             ,CURLOPT_FAILONERROR    => false
+            // Maybe resolve cURL Error (28) 
+            ,CURLOPT_NOSIGNAL       => true
         ];
     }
 
