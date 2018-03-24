@@ -98,16 +98,17 @@ class CurlHelper implements CurlInterface
     public function getDefaultOptions()
     {
         return [ 
-             CURLOPT_HEADER         => true
-            ,CURLOPT_VERBOSE        => false
-            ,CURLOPT_RETURNTRANSFER => true
-            ,CURLOPT_FOLLOWLOCATION => true
-            ,CURLOPT_SSL_VERIFYHOST => false
-            ,CURLOPT_SSL_VERIFYPEER => false
+             CURLOPT_HEADER            => true
+            ,CURLOPT_VERBOSE           => false
+            ,CURLOPT_RETURNTRANSFER    => true
+            ,CURLOPT_FOLLOWLOCATION    => true
+            ,CURLOPT_SSL_VERIFYHOST    => false
+            ,CURLOPT_SSL_VERIFYPEER    => false
             // For get error body
-            ,CURLOPT_FAILONERROR    => false
+            ,CURLOPT_FAILONERROR       => false
             // Maybe resolve cURL Error (28) 
-            ,CURLOPT_NOSIGNAL       => true
+            ,CURLOPT_NOSIGNAL          => true
+            ,CURLOPT_DNS_CACHE_TIMEOUT => 30
         ];
     }
 
