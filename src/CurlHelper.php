@@ -42,7 +42,7 @@ class CurlHelper implements CurlInterface
     ) {
         $this->_opts = $this->getDefaultOptions();
         \PMVC\dev(function() use (&$options){
-            $options[CURLINFO_HEADER_OUT] = 1;
+            $options[CURLINFO_HEADER_OUT] = true;
         }, 'req');
 
         // keep consistency when somewhere get url

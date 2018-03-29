@@ -20,12 +20,7 @@ class curl extends \PMVC\PlugIn
 
     private function _add($url, $function, $opts, $ignore=null)
     {
-        if (!empty($this['session'])) {
-            $oCurl = $this['session'];
-            unset($this['session']);
-        } else {
-            $oCurl = new CurlHelper();
-        }
+        $oCurl = new CurlHelper();
         $oCurl->setOptions($url, $function, $opts);
         if (!$ignore) {
             $this->add($oCurl);

@@ -14,6 +14,8 @@ ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\OPT_TO_STR';
 class OPT_TO_STR
 {
     private $_keys = [
+        CURLOPT_SHARE=>'SHARE',
+        CURLINFO_HEADER_OUT=>'HEADER_OUT',
         CURLOPT_COOKIE=>'COOKIE',
         CURLOPT_CONNECTTIMEOUT=>'CONNECTTIMEOUT',
         CURLOPT_FOLLOWLOCATION=>'FOLLOWLOCATION',
@@ -32,6 +34,8 @@ class OPT_TO_STR
         CURLOPT_URL=>'URL',
         CURLOPT_USERAGENT=>'USERAGENT',
         CURLOPT_VERBOSE=>'VERBOSE',
+        CURLOPT_NOSIGNAL=>'NOSIGNAL',
+        CURLOPT_DNS_CACHE_TIMEOUT=>'DNS_CACHE_TIMEOUT',
     ];
     
     function __invoke()
@@ -42,6 +46,12 @@ class OPT_TO_STR
     function all(array $opts)
     {
         $return = [];
+        if (isset($opts[CURLOPT_SHARE])) {
+            $opts[CURLOPT_SHARE] = print_r(
+                $opts[CURLOPT_SHARE],
+                true
+            );
+        }
         foreach($opts as $k=>$v){
             $return[$this->one($k, new BaseObject($v))] = $v;
         }
