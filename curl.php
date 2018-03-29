@@ -64,13 +64,15 @@ class curl extends \PMVC\PlugIn
 
     public function getCookie(CurlResponder $responder)
     {
-        return [
+        $setCookie = \PMVC\get($responder->header, 'set-cookie'); 
+        $options = [
             CURLOPT_COOKIE=>
                 join(
-                    ';',
-                    \PMVC\toArray($responder->header['set-cookie'])
+                    '; ',
+                    \PMVC\plug('cookie')->parseSetCookieString($setCookie)
                 )
         ];
+        return $options;
     }
 
     /**
