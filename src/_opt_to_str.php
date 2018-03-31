@@ -2,7 +2,6 @@
 namespace PMVC\PlugIn\curl;
 
 use PMVC\PlugIn\url\Query;
-use PMVC\BaseObject;
 
 ${_INIT_CONFIG}[_CLASS] = __NAMESPACE__.'\OPT_TO_STR';
 
@@ -21,6 +20,7 @@ class OPT_TO_STR
         CURLOPT_FOLLOWLOCATION=>'FOLLOWLOCATION',
         CURLOPT_FAILONERROR=>'FAILONERROR',
         CURLOPT_FORBID_REUSE=>'FORBID_REUSE',
+        CURLOPT_FRESH_CONNECT=>'FRESH_CONNECT',
         CURLOPT_HTTPHEADER=>'HTTPHEADER',
         CURLOPT_HEADER=>'Respond Contain header',
         CURLOPT_NOBODY=>'NOBODY',
@@ -53,7 +53,7 @@ class OPT_TO_STR
             );
         }
         foreach($opts as $k=>$v){
-            $return[$this->one($k, new BaseObject($v))] = $v;
+            $return[$this->_one($k, $v)] = $v;
         }
         return $return;
     }
@@ -63,14 +63,17 @@ class OPT_TO_STR
         return Query::parse_str($v);
     }
 
-    function one($k, $v=null)
+    private function _one($k, &$v)
     {
         $key = \PMVC\value($this->_keys, [$k]);
         if ($key) {
             if (method_exists($this, $key)) {
                 if (!is_null($v)) {
-                    $v =& $v();
-                    $v = $this->$key($v);
+                    $raw = $v;
+                    $v = [
+                        'cook' => $this->$key($v),
+                        'raw' => $raw 
+                    ];
                 }
             }
             return $key;

@@ -40,10 +40,13 @@ class curl extends \PMVC\PlugIn
     private function _toJson (&$opt)
     {
         $opt[CURLOPT_POSTFIELDS] = json_encode($opt[CURLOPT_POSTFIELDS]);
-        $opt[CURLOPT_HTTPHEADER] = [
-            'Content-Type: application/json',
-            'Content-Length: '.strlen($opt[CURLOPT_POSTFIELDS])
-        ];
+        $opt[CURLOPT_HTTPHEADER] = array_merge(
+            \PMVC\get($opt, CURLOPT_HTTPHEADER, []),
+            [
+                'Content-Type: application/json',
+                'Content-Length: '.strlen($opt[CURLOPT_POSTFIELDS])
+            ]
+        );
     }
 
     public function handleCookie($url=null, $function=null, array $querys=[])
@@ -137,10 +140,10 @@ class curl extends \PMVC\PlugIn
         if (!$json) {
             $querys = http_build_query($querys, '', '&');
         }
-        $curl_opt = array(
+        $curl_opt = [ 
             CURLOPT_CUSTOMREQUEST=>'PUT',
             CURLOPT_POSTFIELDS=>$querys
-        );
+        ];
         if ($json) {
             $this->_toJson($curl_opt);
         }

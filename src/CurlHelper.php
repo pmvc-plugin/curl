@@ -77,6 +77,9 @@ class CurlHelper implements CurlInterface
     public function resetOptions($options = null)
     {
         $this->_opts = [];
+        if (is_resource($this->_oCurl)) {
+            curl_reset($this->_oCurl);
+        }
         if (is_array($options)) {
             return $this->set($options); 
         }
