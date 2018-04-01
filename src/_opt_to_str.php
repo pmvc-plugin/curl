@@ -36,6 +36,7 @@ class OPT_TO_STR
         CURLOPT_VERBOSE=>'VERBOSE',
         CURLOPT_NOSIGNAL=>'NOSIGNAL',
         CURLOPT_DNS_CACHE_TIMEOUT=>'DNS_CACHE_TIMEOUT',
+        CURLOPT_TCP_NODELAY=>'TCP_NODELAY',
     ];
     
     function __invoke()

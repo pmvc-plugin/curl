@@ -105,13 +105,18 @@ class CurlHelper implements CurlInterface
             ,CURLOPT_VERBOSE           => false
             ,CURLOPT_RETURNTRANSFER    => true
             ,CURLOPT_FOLLOWLOCATION    => true
+
+            // Fixed ssl error
             ,CURLOPT_SSL_VERIFYHOST    => false
             ,CURLOPT_SSL_VERIFYPEER    => false
+
             // For get error body
             ,CURLOPT_FAILONERROR       => false
+
             // Maybe resolve cURL Error (28) 
             ,CURLOPT_NOSIGNAL          => true
             ,CURLOPT_DNS_CACHE_TIMEOUT => 30
+            ,CURLOPT_TCP_NODELAY       => true
         ];
     }
 
