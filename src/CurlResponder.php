@@ -44,6 +44,11 @@ class CurlResponder
     public $errno;
 
     /**
+     * @var prepare for purge 
+     */
+    public $purge;
+
+    /**
      * Construct
      * 
      * !!Keep in mind!!
@@ -52,6 +57,9 @@ class CurlResponder
      */
     public function __construct($return, $curlHelper, $more=[])
     {
+        if (empty($curlHelper)) {
+            return;
+        }
         $oCurl = $curlHelper->getInstance();
         $this->errno = curl_errno($oCurl);
         $this->code = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
@@ -168,4 +176,15 @@ class CurlResponder
             return $headerdata;
         }
     }
+
+    /**
+     * purge
+     */
+     public function purge()
+     {
+        if (empty($this->purge)) {
+            return;
+        }
+        return call_user_func($this->purge);
+     }
 }
