@@ -190,10 +190,13 @@ class CurlResponder
 
      static public function fromJson($json)
      {
-        $r = new CurlResponder();
+        $r = new CurlResponder(false, false);
         $arr = \PMVC\fromJson($json, true);
+        if (empty($arr) || !is_array($arr)) {
+            return false;
+        }
         foreach ($arr as $k=>$v) {
-            $r->$k =& $v;
+            $r->$k = $v;
         }
         $r->body = gzuncompress(urldecode($r->body));
         return $r;
