@@ -2,7 +2,7 @@
 namespace PMVC\PlugIn\curl;
 use PMVC;
 use PHPUnit_Framework_TestCase;
-use CURLFILE;
+use CURLFile;
 
 class CurlTest extends PHPUnit_Framework_TestCase
 {
