@@ -187,4 +187,15 @@ class CurlResponder
         }
         return call_user_func($this->purge);
      }
+
+     static public function fromJson($json)
+     {
+        $r = new CurlResponder();
+        $arr = \PMVC\fromJson($json, true);
+        foreach ($arr as $k=>$v) {
+            $r->$k =& $v;
+        }
+        $r->body = gzuncompress(urldecode($r->body));
+        return $r;
+     }
 }
