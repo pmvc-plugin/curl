@@ -95,6 +95,15 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     }
 
+    public function head($url=null, $function=null, array $querys=[])
+    {
+        $url = $this->_getUrl($url, $querys);
+        $curl_opt = array(
+            CURLOPT_CUSTOMREQUEST=>'HEAD'
+        );
+        return $this->_add($url, $function, $curl_opt);
+    }
+
     public function get($url=null, $function=null, array $querys=[])
     {
         $url = $this->_getUrl($url, $querys);
@@ -135,13 +144,13 @@ class curl extends \PMVC\PlugIn
         return $this->_add($url, $function, $curl_opt);
     }
 
-    public function put($url=null, $function=null, array $querys=[], $json=false)
+    public function put($url=null, $function=null, array $querys=[], $json=false, $method='PUT')
     {
         if (!$json) {
             $querys = http_build_query($querys, '', '&');
         }
         $curl_opt = [ 
-            CURLOPT_CUSTOMREQUEST=>'PUT',
+            CURLOPT_CUSTOMREQUEST=>$method,
             CURLOPT_POSTFIELDS=>$querys
         ];
         if ($json) {
@@ -149,4 +158,9 @@ class curl extends \PMVC\PlugIn
         }
         return $this->_add($url, $function, $curl_opt);
     } 
+
+    public function patch($url=null, $function=null, array $querys=[], $json=false)
+    {
+        return $this->put($url, $function, $querys, $json, 'PATCH');
+    }
 }
