@@ -17,14 +17,20 @@ class CurlDev
             getUrl($opts[CURLOPT_URL]);
         $arrUrl = \PMVC\get($url);
         $arrUrl['query'] = \PMVC\get($url->query);
-        if (!mb_detect_encoding($rinfo['body'],'utf-8',true)) {
-            $rinfo['body'] = utf8_encode($rinfo['body']);
+        $body = $rinfo['body'];
+        unset($rinfo['body']);
+        if (!mb_detect_encoding($body,'utf-8',true)) {
+            $body = utf8_encode($body);
+        }
+        $body = \PMVC\fromJson($body);
+        if (isset($body->PW)) {
+            $body->PW = '*secret*';
         }
         $return = [
             'option' => $options, 
             'url'    => $arrUrl,
             'respond'=> $rinfo,
-            'body'   => \PMVC\fromJson($rinfo['body']),
+            'body'   => $body,
         ];
         \PMVC\dev(
         /**
