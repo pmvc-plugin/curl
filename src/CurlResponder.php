@@ -73,7 +73,10 @@ class CurlResponder
         $header = $this->getHeaders($this->rawHeader);
         if (isset($header['multi'])) {
             $this->multiHeader = $header['multi'];
-            $this->header = $header['multi'][(count($header['multi'])-1)];
+            $this->header = call_user_func_array(
+              '\PMVC\arrayReplace',
+              $header['multi'] 
+            );
         } else {
             $this->header = $header;
         }
@@ -81,11 +84,12 @@ class CurlResponder
             && isset($this->header['location'])
         ) {
             $this->url = $this->header['location'];
-            $curlHelper->setOptions($this->url, null, function($r){
+            $oCurl = new CurlHelper();
+            $oCurl->setOptions($this->url, function($r){
                 $this->header = $r->header;
                 $this->body = $r->body;
-            });
-            $curlHelper->process(); 
+            }, $curlHelper->set());
+            $oCurl->process(); 
         } elseif (!empty($this->header['content-encoding']) 
             && 'gzip' === $this->header['content-encoding']
         ) {
