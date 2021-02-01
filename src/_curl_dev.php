@@ -22,7 +22,7 @@ class CurlDev
         if (!mb_detect_encoding($body,'utf-8',true)) {
             $body = utf8_encode($body);
         }
-        $body = \PMVC\fromJson($body);
+        $body = \PMVC\fromJson($body, true);
         if (isset($body->PW)) {
             $body->PW = '*secret*';
         }
