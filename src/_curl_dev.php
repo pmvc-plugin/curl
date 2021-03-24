@@ -33,14 +33,6 @@ class CurlDev
             'body'   => $body,
         ];
 
-        \PMVC\dev(
-        /**
-         * @help Get curl trace info.
-         */
-        function() use (&$result) {
-            $result['trace'] = \PMVC\plug('debug')->parseTrace(debug_backtrace(), 14); 
-        }, 'trace');
-
         return $result;
     }
 }

@@ -152,12 +152,15 @@ class CurlHelper implements CurlInterface
         }
         $return = call_user_func($func,$oCurl);
         $r = new CurlResponder($return, $this, $more);
+        $r->info = function() use($r) {
+          return \PMVC\plug('curl')->
+            curl_dev(
+              $r,
+              $this->_opts 
+            );
+        };
         \PMVC\dev(function() use($r) {
-            return \PMVC\plug('curl')->
-                curl_dev(
-                    $r,
-                    $this->_opts 
-                );
+          return $r->info();
         },'curl');
         if (is_callable($this->_function)) {
             call_user_func($this->_function, $r, $this);

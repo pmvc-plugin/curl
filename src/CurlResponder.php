@@ -198,12 +198,26 @@ class CurlResponder
     /**
      * debug information 
      */
-     public function info()
+     public function info($trace = null)
      {
         if (empty($this->info)) {
             return;
         }
-        return call_user_func($this->info);
+
+        $result = call_user_func($this->info);
+
+        /**
+         * @help Get curl trace info.
+         */
+        $traceFunc = function() use (&$result) {
+            $result['trace'] = \PMVC\plug('debug')->parseTrace(debug_backtrace(), 20, 10);
+        };
+        if ($trace) {
+          $traceFunc(); 
+        }
+
+        \PMVC\dev( $traceFunc, 'trace');
+        return $result;
      }
 
      static public function fromJson($json)
