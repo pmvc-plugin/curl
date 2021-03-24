@@ -49,6 +49,11 @@ class CurlResponder
     public $purge;
 
     /**
+     * @var get debug information
+     */
+    public $info;
+
+    /**
      * Construct
      * 
      * !!Keep in mind!!
@@ -190,6 +195,17 @@ class CurlResponder
             return;
         }
         return call_user_func($this->purge);
+     }
+
+    /**
+     * debug information 
+     */
+     public function info()
+     {
+        if (empty($this->info)) {
+            return;
+        }
+        return call_user_func($this->info);
      }
 
      static public function fromJson($json)
