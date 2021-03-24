@@ -26,19 +26,21 @@ class CurlDev
         if (isset($body->PW)) {
             $body->PW = '*secret*';
         }
-        $return = [
+        $result = [
             'option' => $options, 
             'url'    => $arrUrl,
             'respond'=> $rinfo,
             'body'   => $body,
         ];
+
         \PMVC\dev(
         /**
          * @help Get curl trace info.
          */
-        function() use (&$return) {
-            $return['where'] = \PMVC\plug('debug')->parseTrace(debug_backtrace(), 14); 
-        }, 'curl-where');
-        return $return;
+        function() use (&$result) {
+            $result['trace'] = \PMVC\plug('debug')->parseTrace(debug_backtrace(), 14); 
+        }, 'trace');
+
+        return $result;
     }
 }
