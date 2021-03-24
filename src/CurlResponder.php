@@ -1,8 +1,6 @@
 <?php
 namespace PMVC\PlugIn\curl;
 
-use SplFixedArray;
-
 /**
  * keep curl respone data
  */
@@ -132,7 +130,7 @@ class CurlResponder
         if (!empty($more)) {
             $more = array_unique($more);
             foreach ($more as $key) {
-                $info = new SplFixedArray(2);
+                $info = [];
                 $info[0] = \PMVC\get($infos, $key, function() use($oCurl, $key){
                     if (is_numeric($key)) {
                         return curl_getinfo($oCurl, $key);
