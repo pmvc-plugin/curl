@@ -52,6 +52,11 @@ class CurlResponder
     public $info;
 
     /**
+     * @var is cache flag 
+     */
+    public $cache;
+
+    /**
      * Construct
      * 
      * !!Keep in mind!!
