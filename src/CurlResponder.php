@@ -225,17 +225,30 @@ class CurlResponder
         return $result;
      }
 
-     static public function fromJson($json)
+     static public function handleArray($arr)
      {
-        $r = new CurlResponder(false, false);
-        $arr = \PMVC\fromJson($json, true);
         if (empty($arr) || !is_array($arr)) {
             return false;
         }
+        $r = new CurlResponder(false, false);
         foreach ($arr as $k=>$v) {
             $r->$k = $v;
         }
-        $r->body = gzuncompress(urldecode($r->body));
+        if ($r->body) {
+            $r->body = gzuncompress(urldecode($r->body));
+        }
         return $r;
+     }
+
+     static public function fromObject($object)
+     {
+        $arr = \PMVC\get($object);
+        return self::handleArray($arr);
+     }
+
+     static public function fromJson($json)
+     {
+        $arr = \PMVC\fromJson($json, true);
+        return self::handleArray($arr);
      }
 }
