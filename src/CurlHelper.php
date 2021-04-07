@@ -40,7 +40,6 @@ class CurlHelper implements CurlInterface
         callable $function=null, 
         array $options=[]
     ) {
-        $this->_opts = $this->getDefaultOptions();
         \PMVC\dev(function() use (&$options){
             $options[CURLINFO_HEADER_OUT] = true;
         }, 'req');
@@ -49,6 +48,7 @@ class CurlHelper implements CurlInterface
         $options[CURLOPT_URL]=(string)$url;
 
         $this->_function = $function;
+        $this->_opts = $this->getDefaultOptions();
         return $this->set($options);
     }
 
