@@ -239,7 +239,7 @@ class CurlResponder
     public static function handleDebug($body)
     {
         \PMVC\dev(function () use ($body) {
-            $json = \PMVC\from($body);
+            $json = \PMVC\fromJson($body);
             if (isset($json['debugs'])) {
                 return $json['debugs'];
             }
