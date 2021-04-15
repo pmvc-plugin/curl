@@ -111,7 +111,7 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
-        self::handleDebug($this->body);
+        self::handleDebug($this->body, $this->url);
     }
 
     public function handleMore($oCurl, $more)
@@ -236,12 +236,16 @@ class CurlResponder
         return $result;
     }
 
-    public static function handleDebug($body)
+    public static function handleDebug($body, $url)
     {
         \PMVC\dev(function () use ($body) {
             $json = \PMVC\fromJson($body);
-            if (isset($json['debugs'])) {
-                return $json['debugs'];
+            $debugs = \PMVC\get($json, 'debugs');
+            if (!empty($debugs)) {
+              return [
+                'url' => $url,
+                'debugs' => $json['debugs']
+              ];
             }
         }, 'debug');
     }
@@ -257,7 +261,7 @@ class CurlResponder
         }
         if ($r->body) {
             $r->body = gzuncompress(urldecode($r->body));
-            self::handleDebug($r->body);
+            self::handleDebug($r->body, $r->url);
         }
         return $r;
     }
