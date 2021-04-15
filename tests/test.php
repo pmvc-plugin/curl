@@ -104,9 +104,9 @@ class CurlTest extends PHPUnit_Framework_TestCase
                 if (200!==$r->code) {
                     return !trigger_error(print_r($r,true));
                 }
-                $body = \PMVC\fromJson($r->body); 
+                $body = \PMVC\fromJson($r->body);
                 $this->assertEquals('https://file.io/'.$body->key, $body->link);
-                $this->assertEquals('14 days', $body->expiry);
+                $this->assertEquals(true, $body->autoDelete);
                 $this->assertTrue($body->success);
             },
             ['file'=>$file],
