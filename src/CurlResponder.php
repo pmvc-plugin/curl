@@ -111,7 +111,7 @@ class CurlResponder
         } else {
             $this->body = substr($return, $header_size);
         }
-        $this->_handleDebug($this->body);
+        self::handleDebug($this->body);
     }
 
     public function handleMore($oCurl, $more)
@@ -236,7 +236,7 @@ class CurlResponder
         return $result;
     }
 
-    private function _handleDebug($body)
+    public static function handleDebug($body)
     {
         \PMVC\dev(function () use ($body) {
             $json = \PMVC\from($body);
@@ -257,7 +257,7 @@ class CurlResponder
         }
         if ($r->body) {
             $r->body = gzuncompress(urldecode($r->body));
-            $this->_handleDebug($r->body);
+            self::handleDebug($r->body);
         }
         return $r;
     }
