@@ -238,13 +238,13 @@ class CurlResponder
 
     public static function handleDebug($body, $url)
     {
-        \PMVC\dev(function () use ($body) {
-            $json = \PMVC\fromJson($body);
+        \PMVC\dev(function () use ($body, $url) {
+            $json = \PMVC\fromJson($body, true);
             $debugs = \PMVC\get($json, 'debugs');
             if (!empty($debugs)) {
               return [
                 'url' => $url,
-                'debugs' => $json['debugs']
+                'debugs' => $debugs
               ];
             }
         }, 'debug');
