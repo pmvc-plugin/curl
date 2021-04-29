@@ -52,6 +52,11 @@ class CurlResponder
     public $info;
 
     /**
+     * @var minions debug information
+     */
+    public $minions;
+
+    /**
      * @var is cache flag
      */
     public $cache;
