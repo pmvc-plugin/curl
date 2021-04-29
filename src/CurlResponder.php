@@ -212,7 +212,7 @@ class CurlResponder
      */
     public function info($trace = null)
     {
-        if (empty($this->info)) {
+        if (!is_callable($this->info)) {
             return;
         }
 

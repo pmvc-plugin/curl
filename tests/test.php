@@ -1,14 +1,14 @@
 <?php
 namespace PMVC\PlugIn\curl;
 use PMVC;
-use PHPUnit_Framework_TestCase;
+use PMVC\TestCase;
 use CURLFile;
 
-class CurlTest extends PHPUnit_Framework_TestCase
+class CurlTest extends TestCase
 {
     private $_plug='curl';
 
-    function setup()
+    function pmvc_setup()
     {
         \PMVC\initPlugin(['curl'=>null],true);
     }
@@ -27,7 +27,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
         });
         PMVC\plug('curl')->process();
         foreach ($body as $k=>$b) {
-            $this->assertContains($k, $b); 
+            $this->haveString($k, $b); 
         }
 
     }
@@ -36,7 +36,7 @@ class CurlTest extends PHPUnit_Framework_TestCase
     {
         $curl = new CurlHelper();
         $curl->setOptions('http://tw.yahoo.com', function($r){
-            $this->assertContains('yahoo', $r->body); 
+            $this->haveString('yahoo', $r->body); 
             $this->assertTrue(empty($r->errno));
         });
         $curl->process();
