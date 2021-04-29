@@ -52,9 +52,14 @@ class CurlResponder
     public $info;
 
     /**
-     * @var minions debug information
+     * @var is async?
      */
-    public $minions;
+    public $async;
+
+    /**
+     * @var curl server time.
+     */
+    public $serverTime;
 
     /**
      * @var is cache flag
