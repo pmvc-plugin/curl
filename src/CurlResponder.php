@@ -22,7 +22,7 @@ class CurlResponder
     public $rawHeader;
 
     /**
-     * @var http respone header
+     * @var http respone body
      */
     public $body;
 
@@ -252,10 +252,10 @@ class CurlResponder
             $json = \PMVC\fromJson($body, true);
             $debugs = \PMVC\get($json, 'debugs');
             if (!empty($debugs)) {
-              return [
-                'url' => $url,
-                'debugs' => $debugs
-              ];
+                return [
+                    'url' => $url,
+                    'debugs' => $debugs,
+                ];
             }
         }, 'debug');
     }
@@ -269,6 +269,7 @@ class CurlResponder
         foreach ($arr as $k => $v) {
             $r->$k = $v;
         }
+        $r->header = (array) $r->header;
         if ($r->body) {
             $r->body = gzuncompress(urldecode($r->body));
             self::handleDebug($r->body, $r->url);
