@@ -102,7 +102,7 @@ class CurlTest extends TestCase
             $testServer,
             function($r){
                 if (200!==$r->code) {
-                    return !trigger_error(print_r($r,true));
+                    return !trigger_error(print_r(\PMVC\get($r, ['errno', 'error']),true));
                 }
                 $body = \PMVC\fromJson($r->body);
                 $this->assertEquals('https://file.io/'.$body->key, $body->link);

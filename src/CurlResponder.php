@@ -42,6 +42,11 @@ class CurlResponder
     public $errno;
 
     /**
+     * @var error message 
+     */
+    public $error;
+
+    /**
      * @var prepare for purge
      */
     public $purge;
@@ -84,6 +89,9 @@ class CurlResponder
         $this->url = curl_getinfo($oCurl, CURLINFO_EFFECTIVE_URL);
         $this->handleMore($oCurl, $more);
         $header_size = curl_getinfo($oCurl, CURLINFO_HEADER_SIZE);
+        if (!empty($this->errno)) {
+            $this->error = curl_error($oCurl);
+        }
         if (empty($header_size)) {
             return;
         }
