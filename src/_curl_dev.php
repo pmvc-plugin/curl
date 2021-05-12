@@ -27,7 +27,7 @@ class CurlDev
             $body->PW = '*secret*';
         }
         $result = [
-            'url'    => (string)$url,
+            '-url'    => (string)$url,
             'urlObj' => $arrUrl,
             'option' => $options, 
             'respond'=> $rinfo,
