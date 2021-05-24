@@ -15,6 +15,7 @@
         "ext-mbstring": "*",
         "pmvc/pmvc": "*",
         "pmvc-plugin/cookie": "*",
+        "pmvc-plugin/utf8": "*",
         "pmvc-plugin/url": "*"
     },
     "require-dev": {

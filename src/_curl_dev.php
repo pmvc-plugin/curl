@@ -17,15 +17,8 @@ class CurlDev
             getUrl($opts[CURLOPT_URL]);
         $arrUrl = \PMVC\get($url);
         $arrUrl['query'] = \PMVC\get($url->query);
-        $body = $rinfo['body'];
+        $body = $this->caller->bodyDev($rinfo['body']);
         unset($rinfo['body']);
-        if (!mb_detect_encoding($body,'utf-8',true)) {
-            $body = utf8_encode($body);
-        }
-        $body = \PMVC\fromJson($body, true);
-        if (isset($body['PW'])) {
-            $body['PW'] = '*secret*';
-        }
         $result = [
             '-url'    => (string)$url,
             'urlObj' => $arrUrl,
