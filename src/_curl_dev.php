@@ -23,8 +23,8 @@ class CurlDev
             $body = utf8_encode($body);
         }
         $body = \PMVC\fromJson($body, true);
-        if (isset($body->PW)) {
-            $body->PW = '*secret*';
+        if (isset($body['PW'])) {
+            $body['PW'] = '*secret*';
         }
         $result = [
             '-url'    => (string)$url,
