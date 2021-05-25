@@ -243,7 +243,7 @@ class CurlResponder
             $result['trace'] = \PMVC\plug('debug')->parseTrace(
                 debug_backtrace(),
                 20,
-                10
+                15
             );
         };
         if ($trace) {
