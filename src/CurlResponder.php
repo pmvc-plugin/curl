@@ -42,7 +42,7 @@ class CurlResponder
     public $errno;
 
     /**
-     * @var error message 
+     * @var error message
      */
     public $error;
 
@@ -243,7 +243,7 @@ class CurlResponder
             $result['trace'] = \PMVC\plug('debug')->parseTrace(
                 debug_backtrace(),
                 20,
-                15
+                20
             );
         };
         if ($trace) {
@@ -257,7 +257,7 @@ class CurlResponder
     public static function handleDebug($body, $url)
     {
         \PMVC\dev(function () use ($body, $url) {
-            $json = \PMVC\fromJson($body, true);
+            $json = \PMVC\plug('curl')->cookBody($body);
             $debugs = \PMVC\get($json, 'debugs');
             if (!empty($debugs)) {
                 return [
