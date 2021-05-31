@@ -18,7 +18,7 @@ class CurlDev
         $arrUrl = \PMVC\get($url);
         $arrUrl['query'] = \PMVC\get($url->query);
         $body = $this->caller->bodyDev($rinfo['body']);
-        unset($rinfo['body']);
+        unset($rinfo['body'], $rinfo['info']);
         $result = [
             '-url'    => (string)$url,
             'urlObj' => $arrUrl,
