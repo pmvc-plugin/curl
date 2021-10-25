@@ -257,7 +257,7 @@ class CurlResponder
     public static function handleDebug($body, $url)
     {
         \PMVC\dev(function () use ($body, $url) {
-            $json = \PMVC\plug('curl')->cookBody($body);
+            $json = \PMVC\plug('curl')->cook_body($body);
             $debugs = \PMVC\get($json, 'debugs');
             if (!empty($debugs)) {
                 return [

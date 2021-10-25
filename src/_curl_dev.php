@@ -17,7 +17,7 @@ class CurlDev
             getUrl($opts[CURLOPT_URL]);
         $arrUrl = \PMVC\get($url);
         $arrUrl['query'] = \PMVC\get($url->query);
-        $body = $this->caller->bodyDev($rinfo['body']);
+        $body = $this->caller->body_dev($rinfo['body']);
         unset($rinfo['body'], $rinfo['info']);
         $result = [
             '-url'    => (string)$url,

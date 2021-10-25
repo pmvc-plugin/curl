@@ -8,7 +8,7 @@ class BodyDev
 {
     public function __invoke($body)
     {
-        $body = $this->caller->cookBody($body);
+        $body = $this->caller->cook_body($body);
         if (isset($body['PW'])) {
             $body['PW'] = '*secret*';
         }

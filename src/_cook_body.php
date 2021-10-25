@@ -8,7 +8,7 @@ class CookBody
 {
     public function __invoke($body)
     {
-        $body = $this->caller->cleanJsonP($body);
+        $body = $this->caller->clean_json_p($body);
         $body = \PMVC\plug('utf8')->toUtf8($body);
         $body = \PMVC\fromJson($body, true);
         return $body;
