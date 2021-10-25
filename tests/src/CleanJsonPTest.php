@@ -12,6 +12,6 @@ class CleanJsonPTest extends TestCase
     {
         $s1 = 'foo({"aaa": "bbb"});';
         $curl = \PMVC\plug($this->_plug); 
-        $this->assertEquals('{"aaa": "bbb"}', $curl->cleanJsonP($s1));
+        $this->assertEquals('{"aaa": "bbb"}', $curl->clean_json_p($s1));
     }
 }

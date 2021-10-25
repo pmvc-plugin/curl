@@ -281,6 +281,8 @@ class CurlResponder
         if ($r->body) {
             $r->body = gzuncompress(urldecode($r->body));
             self::handleDebug($r->body, $r->url);
+        } else {
+            $r->body = null; 
         }
         return $r;
     }
