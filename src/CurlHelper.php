@@ -91,7 +91,10 @@ class CurlHelper implements CurlInterface
      public function getHash()
      {
         $options = $this->set();
+        $url = \PMVC\plug('url')->getUrl($options[CURLOPT_URL]);
+        unset($url->query['--trace']);
         unset($options[CURLINFO_HEADER_OUT]);
+        $options[CURLOPT_URL] = (string)$url;
         return \PMVC\hash($options);
      }
 
