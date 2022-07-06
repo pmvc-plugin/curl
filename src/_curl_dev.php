@@ -25,6 +25,10 @@ class CurlDev
             'option' => $options, 
             'respond'=> $rinfo,
             'body'   => $body,
+            'help'   => [
+              'trace' => 'get trace info'
+              'req'   => 'get request information', 
+            ],
         ];
 
         return $result;
