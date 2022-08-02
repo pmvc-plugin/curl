@@ -69,7 +69,11 @@ class MultiCurlHelper
         $curlPool->rewind();
         $executePool = new SplObjectStorage();
         $i = 0;
-        $max = 100;
+        /**
+         * Should not greater than 50 to avoid over threads.
+         * Else will make db (ssdb) crash.
+         */
+        $max = 50;
         while ($curlPool->valid()) {
             $obj = $curlPool->current();
             $curlPool->next();
