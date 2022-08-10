@@ -15,7 +15,7 @@ class curl extends \PMVC\PlugIn
 {
     public function init()
     {
-        $this->setDefaultAlias(new MultiCurlHelper());
+        $this->setDefaultAlias(new MultiCurlHelper($this));
     }
 
     private function _add($url, $function, $opts, $ignore=null)

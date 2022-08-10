@@ -13,9 +13,19 @@ class MultiCurlHelper
      */
     private $_curls;
 
-    public function __construct()
+    /**
+     * Should not greater than 10 to avoid over threads.
+     * Else will make db (ssdb) crash.
+     *
+     * @var int payload['max']
+     * @var array payload
+     */
+    private $_payload;
+
+    public function __construct($payload = null)
     {
-       $this->_curls = new SplObjectStorage();
+        $this->_curls = new SplObjectStorage();
+        $this->_payload = $payload;
     }
 
     /**
@@ -32,27 +42,27 @@ class MultiCurlHelper
     /**
      * Get Curl map
      */
-     public function getCurls()
-     {
+    public function getCurls()
+    {
         return $this->_curls;
-     }
+    }
 
     /**
      * Get Curl map
      */
-     public function clean()
-     {
+    public function clean()
+    {
         $this->_curls->removeAll($this->_curls);
-     }
+    }
 
     /**
      * Execute multi curl
      *
-     * @return bool 
+     * @return bool
      */
-    public function process($more=[])
+    public function process($more = [])
     {
-        if (1>=count($this->_curls)) {
+        if (1 >= count($this->_curls)) {
             $this->_curls->rewind();
             $obj = $this->_curls->current();
             $this->clean();
@@ -69,11 +79,10 @@ class MultiCurlHelper
         $curlPool->rewind();
         $executePool = new SplObjectStorage();
         $i = 0;
-        /**
-         * Should not greater than 50 to avoid over threads.
-         * Else will make db (ssdb) crash.
-         */
-        $max = 50;
+        $max =
+            !empty($this->_payload['max']) && is_int($this->_payload['max'])
+                ? $this->_payload['max']
+                : 10;
         while ($curlPool->valid()) {
             $obj = $curlPool->current();
             $curlPool->next();
@@ -82,15 +91,15 @@ class MultiCurlHelper
                 $executePool->attach($obj);
             }
             $i++;
-            if ($i>=$max) {
-                $this->_process($more,$executePool);
-                $i=0;
+            if ($i >= $max) {
+                $this->_process($more, $executePool);
+                $i = 0;
                 $curlPool->removeAll($executePool);
                 $executePool->removeAll($executePool);
             }
         }
         if (count($executePool)) {
-            $this->_process($more,$executePool);
+            $this->_process($more, $executePool);
         }
         $curlPool->removeAll($curlPool);
         $executePool->removeAll($executePool);
@@ -99,9 +108,9 @@ class MultiCurlHelper
     /**
      * Execute multi curl
      *
-     * @return bool 
+     * @return bool
      */
-    private function _process($more,$executePool)
+    private function _process($more, $executePool)
     {
         $executePool->rewind();
 
@@ -123,15 +132,12 @@ class MultiCurlHelper
                 usleep(30000);
             }
             do {
-                $multiExec = curl_multi_exec(
-                    $multiCurl, 
-                    $running
-                );
+                $multiExec = curl_multi_exec($multiCurl, $running);
             } while ($multiExec == CURLM_CALL_MULTI_PERFORM);
         }
 
         foreach ($executePool as $obj) {
-            $obj->process($more, function($oCurl) use ($multiCurl){
+            $obj->process($more, function ($oCurl) use ($multiCurl) {
                 $return = curl_multi_getcontent($oCurl);
                 curl_multi_remove_handle($multiCurl, $oCurl);
                 return $return;
